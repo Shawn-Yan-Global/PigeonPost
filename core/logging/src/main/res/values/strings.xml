@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Common UI strings -->
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="refresh">Refresh</string>
+    <string name="export">Export</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+
+    <!-- Log Management -->
+    <string name="log_management">Log Management</string>
+    <string name="log_overview">Log Overview</string>
+    <string name="total_log_files">Total log files</string>
+    <string name="log_files_count_display">%d files</string>
+    <string name="total_size">Total size</string>
+    <string name="total_size_kb">%d KB</string>
+    <string name="latest_file">Latest file</string>
+    <string name="last_updated">Last updated</string>
+
+    <!-- Quick Actions -->
+    <string name="quick_actions">Quick Actions</string>
+    <string name="view_all_log_files">View all log files</string>
+    <string name="export_logs">Export logs</string>
+    <string name="clear_logs">Clear logs</string>
+
+    <!-- Auto Cleanup Settings -->
+    <string name="auto_cleanup_settings">Auto Cleanup Settings</string>
+    <string name="auto_cleanup_log_files">Auto cleanup log files</string>
+    <string name="auto_delete_logs_desc">Auto delete logs after %d days</string>
+    <string name="manual_log_management_desc">Manually manage log files</string>
+    <string name="cleanup_period">Cleanup Period</string>
+    <string name="days_ago">%d days</string>
+
+    <!-- Dialogs -->
+    <string name="enable_auto_cleanup_now">Enable Auto Cleanup</string>
+    <string name="select_auto_cleanup_period">Select auto cleanup period</string>
+    <string name="will_auto_delete_logs">Will automatically delete logs older than %d days</string>
+    <string name="execute_cleanup_immediately">Execute cleanup immediately?</string>
+    <string name="cleanup_now">Cleanup Now</string>
+    <string name="cleanup_later">Later</string>
+    <string name="cleanup_deleted_result">Deleted %1$d log file(s) older than the selected period</string>
+    <string name="cleanup_nothing_old">No log files older than %1$d days</string>
+    <string name="clear_logs_desc">This will delete all log files and cannot be undone</string>
+    <string name="clear_all">Clear All</string>
+    <string name="export_logs_desc">Export all logs as ZIP file for sharing or backup</string>
+
+    <!-- Log Files Screen -->
+    <string name="log_file_list">Log file list</string>
+    <string name="refresh_log_list">Refresh log list</string>
+
+    <!-- Log Preview Screen -->
+    <string name="previous_page">Previous</string>
+    <string name="next_page">Next</string>
+    <string name="previous_pages_and_lines">Page %1$d/%2$d (Total %3$d lines)</string>
+    <string name="failed_to_load_log_content">Failed to load log content</string>
+</resources>
+
+
+
+
+
+

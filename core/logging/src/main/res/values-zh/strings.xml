@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 通用UI字符串 -->
+    <string name="back">返回</string>
+    <string name="cancel">取消</string>
+    <string name="confirm">确认</string>
+    <string name="refresh">刷新</string>
+    <string name="export">导出</string>
+    <string name="delete">删除</string>
+    <string name="save">保存</string>
+
+    <!-- 日志管理 -->
+    <string name="log_management">日志管理</string>
+    <string name="log_overview">日志概览</string>
+    <string name="total_log_files">日志文件总数</string>
+    <string name="log_files_count_display">%d 个文件</string>
+    <string name="total_size">总大小</string>
+    <string name="total_size_kb">%d KB</string>
+    <string name="latest_file">最新文件</string>
+    <string name="last_updated">最后更新</string>
+
+    <!-- 快捷操作 -->
+    <string name="quick_actions">快捷操作</string>
+    <string name="view_all_log_files">查看所有日志文件</string>
+    <string name="export_logs">导出日志</string>
+    <string name="clear_logs">清除日志</string>
+
+    <!-- 自动清理设置 -->
+    <string name="auto_cleanup_settings">自动清理设置</string>
+    <string name="auto_cleanup_log_files">自动清理日志文件</string>
+    <string name="auto_delete_logs_desc">自动删除 %d 天前的日志</string>
+    <string name="manual_log_management_desc">手动管理日志文件</string>
+    <string name="cleanup_period">清理周期</string>
+    <string name="days_ago">%d 天</string>
+
+    <!-- 对话框 -->
+    <string name="enable_auto_cleanup_now">启用自动清理</string>
+    <string name="select_auto_cleanup_period">选择自动清理周期</string>
+    <string name="will_auto_delete_logs">将自动删除 %d 天前的日志</string>
+    <string name="execute_cleanup_immediately">是否立即执行清理？</string>
+    <string name="cleanup_now">立即清理</string>
+    <string name="cleanup_later">稍后清理</string>
+    <string name="cleanup_deleted_result">已删除 %1$d 个超过所选周期的日志文件</string>
+    <string name="cleanup_nothing_old">没有超过 %1$d 天的日志文件</string>
+    <string name="clear_logs_desc">这将删除所有日志文件，此操作无法撤销</string>
+    <string name="clear_all">全部清除</string>
+    <string name="export_logs_desc">将所有日志导出为 ZIP 文件，方便分享或备份</string>
+
+    <!-- 日志文件列表 -->
+    <string name="log_file_list">日志文件列表</string>
+    <string name="refresh_log_list">刷新日志列表</string>
+
+    <!-- 日志预览 -->
+    <string name="previous_page">上一页</string>
+    <string name="next_page">下一页</string>
+    <string name="previous_pages_and_lines">第 %1$d/%2$d 页 (共 %3$d 行)</string>
+    <string name="failed_to_load_log_content">加载日志内容失败</string>
+</resources>
+
+
+
+
+
+

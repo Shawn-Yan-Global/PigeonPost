@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Log Management Activity -->
+        <activity
+            android:name="com.octopus.logging.ui.activity.LogManagementActivity"
+            android:exported="false" />
+
+        <!-- Log Files Activity -->
+        <activity
+            android:name="com.octopus.logging.ui.activity.LogFilesActivity"
+            android:exported="false" />
+
+        <!-- Log Preview Activity -->
+        <activity
+            android:name="com.octopus.logging.ui.activity.LogPreviewActivity"
+            android:exported="false" />
+    </application>
+
+</manifest>
+

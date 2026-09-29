@@ -1,0 +1,574 @@
+<resources>
+    <string name="app_name">Pigeon Post</string>
+    <string name="app_language">Language Settings</string>
+    <!-- Permission related strings -->
+    <string name="permission_autostart_required">Autostart permission must be enabled in settings</string>
+    <string name="permission_autostart_help">To ensure the app keeps running in the background and can receive SMS:\n\n• Xiaomi (MIUI): Security app → Autostart management\n• Huawei/Honor: Phone Manager → Protected apps\n• OPPO: Settings → Battery → App autostart\n• Vivo: Settings → More settings → Permission management → Autostart\n• Samsung: Settings → Apps → Auto start\n\nPlease enable autostart for PigeonPost to improve reliability.</string>
+    
+    <!-- Foreground service special use explanation (Android 14+) -->
+    <!--
+      Referenced from AndroidManifest.xml via PROPERTY_SPECIAL_USE_FGS_EXPLANATION, so it must NOT
+      be translated: resources referenced from the manifest cannot vary by configuration. The system
+      Settings app therefore always shows the English text.
+    -->
+    <string name="fgs_special_use_explanation" translatable="false">PigeonPost runs a foreground service to monitor and forward incoming SMS messages in real-time. This is essential for the core functionality of the app: receiving SMS notifications when you\'re away from your phone and forwarding them to your email. The service must remain active to ensure no messages are missed.</string>
+    <string name="permission_battery_optimization">Battery optimization must be disabled for this app</string>
+    <string name="permission_read_sms">READ_SMS permission is required</string>
+    <string name="permission_receive_sms">RECEIVE_SMS permission is required</string>
+    <string name="permission_default_sms_app">Default SMS app permission is required</string>
+    <string name="permission_notification">Notification permission is required</string>
+    <string name="permission_sms_appops">SMS access permission must be enabled in system settings</string>
+    <string name="autostart_permission_title">Autostart Permission</string>
+    <string name="autostart_permission_desc">Enable autostart permission to ensure the app can automatically restart and receive SMS messages after device reboot or being killed.</string>
+    
+    <!-- SMS Service permission help -->
+    <string name="sms_service_permission_help_title">📱 SMS Service Permission Required</string>
+    <string name="sms_service_permission_help_desc">In addition to READ_SMS and RECEIVE_SMS permissions, you also need to enable SMS Service permission in system settings:\n\n1. Tap \"Open Settings\" below\n2. Find \"SMS\" or \"Message Access\" option\n3. Enable SMS access for PigeonPost\n\nThis permission allows the app to read SMS messages in the background.</string>
+
+    <!-- Permission status messages -->
+    <string name="status_service_running_normal">Service running normally</string>
+    <string name="status_service_running_no_notification">Service running (notification recommended)</string>
+    <string name="status_service_stopped">Service stopped</string>
+    <string name="status_need_system_permissions">System permissions required</string>
+    <string name="status_need_basic_permissions">Basic permissions required</string>
+
+    <!-- Permission status details -->
+    <string name="status_missing_basic_sms">Missing basic SMS permissions</string>
+    <string name="status_need_sms_access">SMS access permission required in system settings</string>
+    <string name="status_all_permissions_ready">All permissions ready</string>
+    <string name="status_notification_enabled">Notification permission enabled</string>
+    <string name="status_notification_recommended">Notification permission recommended</string>
+
+    <!-- Button texts -->
+    <string name="button_request_permissions">Request Permissions</string>
+    <string name="button_open_settings">Open Settings</string>
+    <string name="button_set_as_default">Set as Default</string>
+    <string name="button_battery_optimization">Battery Optimization</string>
+    <string name="button_autostart_permission">Go to Settings</string>
+    <string name="button_confirm_autostart">I\'ve Set It Up</string>
+    <string name="autostart_permission_warning">⚠️ Recommended: Enable autostart permission to improve app reliability</string>
+    <string name="autostart_confirmed_toast">✅ Autostart permission confirmed</string>
+    <string name="button_enable_notifications">Enable Notifications</string>
+    <string name="button_restart_app">Restart App</string>
+    <string name="permission_refresh_hint_title">Permissions updated? Restart recommended</string>
+    <string name="permission_refresh_hint_desc">If you just changed system permissions, restart the app to make sure all services are re-initialized correctly.</string>
+
+    <!-- Toast messages for permission switch -->
+    <string name="toast_grant_basic_permissions">Please grant basic SMS permissions first</string>
+    <string name="toast_enable_sms_access">Please enable SMS access in system settings</string>
+    <string name="toast_disable_battery_optimization">Please disable battery optimization</string>
+    <string name="toast_enable_autostart">Please enable autostart permission</string>
+    <string name="toast_complete_permission_setup">Please complete permission setup</string>
+
+    <!-- Service status reminder banner & prompt -->
+    <string name="service_permission_status_title">Service &amp; Permission Status</string>
+    <string name="drawer_service_status_entry">Service &amp; Permission Settings</string>
+    <string name="drawer_service_status_desc">Manage SMS service, permissions and battery optimization</string>
+    <string name="banner_service_stopped_prompt">SMS monitoring is not running. Tap to configure service.</string>
+    <string name="banner_permission_issue_prompt">Permissions or settings needed. Tap to configure.</string>
+    <string name="banner_open_drawer">Configure</string>
+    <string name="template_saved_title">Settings Saved</string>
+    <string name="template_saved_service_warning">Settings saved! However, SMS monitoring service is currently off.</string>
+    <string name="template_saved_enable_now">Open Settings</string>
+    <string name="template_saved_dismiss">Later</string>
+
+    <!-- Active time screen -->
+    <string name="active_time_title">Active Time Configuration</string>
+    <string name="enable_active_time_control">Enable Active Time Control</string>
+    <string name="active_time_description">SMS forwarding will only work during specified time periods</string>
+    <string name="time_periods">Time Periods</string>
+    <string name="add_time_period">Add Time Period</string>
+    <string name="configure_time_period">Configure Time Period</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="cross_day_period">Cross-day period</string>
+    <string name="status_disabled">Active time disabled, monitoring all day</string>
+    <string name="status_active">Currently in active period, monitoring</string>
+    <string name="status_paused">Currently not in active period, paused</string>
+    <string name="cross_day_info">This will create a cross-day period</string>
+    <string name="active_periods_24h">Active Periods (24-hour view)</string>
+    <string name="active">Active</string>
+    <string name="inactive">Inactive</string>
+    <string name="how_it_works">How it works</string>
+    <string name="current_language">Current Language</string>
+    <string name="log_output_english">Log output language: English</string>
+    <string name="log_output_chinese">Log output language: Chinese</string>
+    <string name="active_time_help">• Cross–day periods are supported (e.g., 22:00 – 06:00)\n• Multiple time periods can be configured\n• SMS forwarding is only active during specified times\n• All times use 24-hour format for precision</string>
+
+
+    <!-- Main Screen -->
+    <string name="app_title">PigeonPost</string>
+    <string name="debug_panel">Debug Panel</string>
+    <string name="template_settings">Template Settings</string>
+    <string name="email_config">Email Config</string>
+    <string name="active_time">Active Time</string>
+
+    <!-- Guide Screen -->
+    <string name="email_guide_description">Select your email type and follow the steps to configure SMTP service</string>
+    <string name="select_email_type">Select Email Type</string>
+    <string name="_163_email">163 Email</string>
+    <string name="gmail">Gmail</string>
+    <string name="outlook">Outlook</string>
+    <string name="other_email">Other Email</string>
+    <string name="config_steps">Configuration Steps</string>
+
+    <!-- Common UI Elements -->
+    <string name="confirm">Confirm</string>
+    <string name="close">Close</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="skip">Skip</string>
+    <string name="finish">Finish</string>
+    <string name="settings">Settings</string>
+    <string name="help">Help</string>
+
+    <!-- QQ Email Guide -->
+    <string name="qq_email_steps">QQ Email Configuration Steps</string>
+    <string name="step_login_qq">Login to QQ Email</string>
+    <string name="step_login_qq_desc">Open QQ Email web version (mail.qq.com) and login to your QQ email account</string>
+    <string name="step_enable_smtp">Enable SMTP Service</string>
+    <string name="step_enable_smtp_desc">Click \'Settings\' in top right → Select \'Account\' → Find \'POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV Service\' → Enable \'POP3/SMTP Service\'</string>
+    <string name="step_get_auth_code">Get Authorization Code</string>
+    <string name="step_get_auth_code_desc">System will send authorization code to your phone via SMS, save this code for email password field</string>
+
+    <!-- Outlook Email Guide -->
+    <string name="outlook_email_steps">Outlook Email Configuration Steps</string>
+
+    <!-- Notification related strings -->
+    <string name="sms_received_notification">SMS Received Notification</string>
+    <string name="sms_received_notification_desc">Instant notification when SMS is received</string>
+    <string name="sms_forward_result">SMS Forward Result</string>
+    <string name="sms_forward_notification">SMS Forward Notification</string>
+    <string name="email_template_default">SMS from {sender}:\n\n{content}\n\nReceived at: {time}</string>
+    <string name="sms_forward_result_desc">Result notification for SMS forwarding success or failure</string>
+    <string name="status_processing">Processing…</string>
+    <string name="status_service_not_running">Service not running</string>
+    <string name="status_forward_failed">Forward failed</string>
+    <string name="sms_received_title">📱 SMS Received</string>
+    <string name="sms_from">From: %s</string>
+    <string name="sms_notification_details">Sender: %1$s\nContent preview: %2$s\nStatus: %3$s</string>
+    <string name="sms_forward_success_title">✅ SMS Forward Success</string>
+    <string name="sms_forward_success">SMS from [%s] forwarded successfully</string>
+    <string name="sms_forward_success_with_keyword">SMS from [%1$s] forwarded successfully (matched keyword: %2$s)</string>
+    <string name="sms_forward_failed_title">❌ SMS Forward Failed</string>
+    <string name="sms_forward_failed">SMS from [%1$s] forward failed: %2$s</string>
+
+    <!-- Service notification related strings -->
+    <string name="sms_monitor_service">SMS Monitor Service</string>
+    <string name="sms_monitor_service_desc">Keep SMS monitoring service running to ensure background SMS reception</string>
+    <string name="permission_monitor_service">Permission Monitor</string>
+    <string name="permission_monitor_service_desc">Monitor SMS permission status</string>
+    <string name="permission_disabled_title">⚠️ Permission Disabled</string>
+    <string name="permission_disabled_desc">SMS listening has been disabled by system, please re-authorize to continue using PigeonPost</string>
+    <string name="pigeon_sms_listener">PigeonPost - SMS Listener</string>
+    <string name="active_period_monitoring">Active period - Monitoring SMS</string>
+    <string name="inactive_period_low_power">Inactive period - Low power mode</string>
+    <string name="monitoring_sms">Monitoring SMS…</string>
+    <string name="stop_listening">⏹️ Stop Listening</string>
+
+    <!-- Debug Screen -->
+    <string name="sms_test">SMS Test</string>
+    <string name="forward_records">Forward Records</string>
+    <string name="log_management">Log Management</string>
+
+    <!-- ActiveTime Screen -->
+    <string name="quick_config">Quick Config</string>
+    <string name="morning_rush">Morning Rush</string>
+    <string name="evening_rush">Evening Rush</string>
+    <string name="work_hours">Work Hours</string>
+    <string name="all_day_listening">All Day Listening</string>
+    <string name="time_settings">Time Settings</string>
+
+    <!-- Template Screen -->
+    <string name="keyword_settings">Keyword Settings</string>
+    <string name="keyword_settings_desc">Enter one keyword per line, SMS matching these keywords will be forwarded</string>
+    <string name="keywords_placeholder">Keywords (one per line)</string>
+    <string name="no_filter_warning">⚠️ In no-filter mode, keyword settings will be ignored</string>
+    <string name="matching_settings">Matching Settings</string>
+    <string name="no_filter_forward_mode">No Filter Forward Mode</string>
+    <string name="no_filter_mode_desc_enabled">⚠️ All SMS will be forwarded</string>
+    <string name="no_filter_mode_desc_disabled">Only forward SMS matching keywords</string>
+    <string name="case_sensitive">Case Sensitive</string>
+
+    <!-- Email Config Screen -->
+    <string name="common_email_config">Common Email Config</string>
+    <string name="email_type_desc">Select your email type to auto-fill configuration information</string>
+    <string name="qq_email">QQ Email</string>
+    <string name="netease_163_email">163 Email</string>
+    <string name="email_config_guide">Email Configuration Guide</string>
+    <string name="expand_guide">Expand Guide</string>
+    <string name="collapse_guide">Collapse Guide</string>
+    <string name="guide_desc">Click to expand detailed email configuration tutorial</string>
+    <string name="smtp_server_config">SMTP Server Configuration</string>
+    <string name="smtp_server_address">SMTP Server Address</string>
+    <string name="port">Port</string>
+    <string name="use_tls_encryption">Use TLS Encryption</string>
+    <string name="email_account_config">Email Account Configuration</string>
+    <string name="sender_email">Sender Email</string>
+
+    <!-- Common UI strings -->
+    <string name="save">Save</string>
+    <string name="select_all">Select All</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="no_sms_records">No SMS records</string>
+    <string name="notification_settings">Notification Settings</string>
+    <string name="clean_records">Clean Records</string>
+    <string name="selected_records">Selected %d records</string>
+    <string name="select_records_to_delete">Select records to delete</string>
+    <string name="forward_records_title">Forward Records</string>
+    <string name="recent_sms_desc">Show recently received SMS records and forwarding status</string>
+
+    <!-- Log Screen -->
+    <string name="log_overview">Log Overview</string>
+    <string name="log_files_count">%d log files</string>
+    <string name="total_size">Total size</string>
+    <string name="latest_file">Latest file</string>
+    <string name="last_updated">Last updated</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="view_all_log_files">View all log files</string>
+
+    <!-- SMS Test Screen -->
+    <string name="service_status_check">Service Status Check</string>
+    <string name="sms_monitor_service_status">SMS Monitor Service</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="active_time_restriction">Active Time Restriction</string>
+    <string name="disabled_all_day_monitor">Disabled (All day monitor)</string>
+    <string name="current_time_status">Current Time Status</string>
+    <string name="in_active_time">In active time</string>
+    <string name="not_in_active_time">Not in active time</string>
+    <string name="test_sms_content">Test SMS content</string>
+    <string name="test_sms_default_content">[Test] Your verification code is 123456, please use within 5 minutes.</string>
+    <string name="active_time_status_details">Active Time Status Details</string>
+    <string name="active_time_range">Active Time Range</string>
+    <string name="keyword_count">Keyword Count</string>
+    <string name="keywords_unit">keywords</string>
+    <string name="email_configuration">Email Configuration</string>
+    <string name="configured">Configured</string>
+    <string name="not_configured">Not configured</string>
+
+    <!-- Template Screen additional strings -->
+    <string name="matching_logic">Matching Logic</string>
+    <string name="contains_any_keyword">Contains any keyword</string>
+    <string name="contains_all_keywords">Must contain all keywords</string>
+    <string name="current_template">Current Template</string>
+    <string name="no_keywords_set">No keywords set</string>
+    <string name="keywords_label">Keywords: %s</string>
+    <string name="matching_logic_label">Matching logic: %s</string>
+    <string name="case_sensitive_label">Case sensitive: %s</string>
+    <string name="contains_any">Contains any</string>
+    <string name="contains_all">Must contain all</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="use_email_template">Use Email Template</string>
+    <string name="email_template_settings">Email Template Settings</string>
+    <string name="template_placeholders_desc">Use placeholders to customize email content format:\n• {sender} - SMS sender\n• {content} - SMS content\n• {time} - Received time\n• {code} - Extracted verification code (if any)</string>
+
+    <!-- Additional Log Screen strings -->
+    <string name="log_files_total">Total log files</string>
+    <string name="files_unit">files</string>
+    <string name="total_size_kb">%d KB</string>
+    <string name="refresh_log_list">Refresh log list</string>
+    <string name="export_logs">Export logs</string>
+    <string name="clean_logs">Clean logs</string>
+    <string name="clear_logs_desc">This will delete all log files. This action cannot be undone.</string>
+    <string name="export_logs_desc">Export log files as a ZIP for sharing or backup.</string>
+    <string name="clear_all">Clear all</string>
+    <string name="auto_cleanup_settings">Auto cleanup settings</string>
+    <string name="auto_cleanup_log_files">Auto cleanup log files</string>
+    <string name="cleanup_period">Cleanup period</string>
+    <string name="days_ago">%d days ago</string>
+    <string name="enable_auto_cleanup">Enable auto cleanup</string>
+    <string name="auto_delete_logs_desc">Auto delete logs from %d days ago</string>
+    <string name="manual_manage_logs">Manual manage log files</string>
+
+    <!-- Additional Email Config strings -->
+    <string name="password_auth_code">Password/Auth code</string>
+    <string name="recipient_email">Recipient email</string>
+    <string name="email_subject">Email subject</string>
+    <string name="test_email">Test email</string>
+    <string name="test_email_desc">Send test email to verify configuration is correct</string>
+    <string name="sending_test_email">Sending test email…</string>
+    <string name="test_email_success">Test email sent successfully!</string>
+    <string name="send_failed">Send failed: %s</string>
+    <string name="retry">Retry</string>
+    <string name="send_test_email">Send test email</string>
+    <string name="send_again">Send again</string>
+    <string name="save_config">Save configuration</string>
+    <string name="qq_email_smtp_tutorial">QQ Email SMTP Configuration Tutorial</string>
+    <string name="step_1_enable_smtp">Step 1: Enable SMTP service</string>
+    <string name="qq_email_steps_desc">1. Login to QQ Email web version\n2. Click "Settings" in top left\n3. Select "Account" tab\n4. Find "POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV service"\n5. Enable "IMAP/SMTP service"</string>
+
+
+    <!-- Missing strings for new features -->
+    <string name="notification_settings_desc">Notification settings</string>
+    <string name="cleanup_records_desc">Cleanup records</string>
+    <string name="edit_desc">Edit</string>
+    <string name="sms_will_show_here">SMS will show here after received</string>
+    <string name="confirm_delete_title">Confirm delete</string>
+    <string name="confirm_delete_message">Are you sure to delete selected %d records? This action cannot be undone.</string>
+    <string name="cleanup_records_title">Cleanup records</string>
+    <string name="select_cleanup_time_range">Select cleanup time range:</string>
+    <string name="days_ago_label">%d days ago</string>
+    <string name="will_delete_records_before_days">Will delete all records before %d days</string>
+    <string name="cleanup">Cleanup</string>
+    <string name="forward_record_settings_title">Forward record settings</string>
+    <string name="notification_settings_section">Notification settings</string>
+    <string name="auto_cleanup_settings_section">Auto cleanup settings</string>
+    <string name="auto_cleanup_forward_records">Auto cleanup forward records</string>
+    <string name="auto_delete_records_desc">Auto delete records older than %d days</string>
+    <string name="days_label">%d days</string>
+    <string name="done">Done</string>
+    <string name="enable_auto_cleanup_title">Enable auto cleanup</string>
+    <string name="execute_cleanup_now_question">Execute cleanup immediately?</string>
+    <string name="forwarded">Forwarded</string>
+    <string name="forward_failed">Forward failed</string>
+    <string name="not_forwarded">Not forwarded</string>
+    <string name="error_info">Error info</string>
+    <string name="retry_forward">Retry forward</string>
+    <string name="force_retry">Force retry</string>
+    <string name="retry_with_filter">Retry with filter</string>
+    <string name="force_retry_confirm_title">Confirm force retry</string>
+    <string name="force_retry_confirm_message">Force retry will resend this SMS regardless of filter rules. Are you sure?</string>
+    <string name="sms_not_match_filter">SMS does not match filter rules</string>
+    <string name="sms_cache_duplicate">Duplicate SMS detected (identical content received %d seconds ago)</string>
+    <string name="confirm_delete_single_title">Confirm delete</string>
+    <string name="confirm_delete_single_message">Are you sure you want to delete this record? This action cannot be undone.</string>
+    
+    <!-- Forward error messages and hints -->
+    <string name="forward_error_unknown">Unknown error occurred during forward</string>
+    <string name="forward_error_hint_auth">Check email account and password/authorization code</string>
+    <string name="forward_error_hint_network">Check network connection and try again</string>
+    <string name="forward_error_hint_smtp">Check SMTP server address and port configuration</string>
+
+    <!-- Additional missing strings -->
+    <string name="sms_received_notification_title">SMS received notification</string>
+    <string name="forward_result_notification_title">Forward result notification</string>
+    <string name="forward_result_notification_desc">Show notification when forward succeeds or fails</string>
+    <string name="cleanup_now">Cleanup now</string>
+    <string name="cleanup_later">Cleanup later</string>
+    <string name="select_language">Select language</string>
+    <string name="note_warning">⚠️ Note</string>
+    <string name="language_change_immediate">Language change takes effect immediately. New log messages will use the selected language.</string>
+    <string name="previous_page">Previous page</string>
+    <string name="next_page">Next page</string>
+    <string name="previous_pages_and_lines">Page %1$d of %2$d \nTotal %3$d lines</string>
+    <string name="total_log_files">Total log files</string>
+    <string name="log_files_count_display">%d files</string>
+    <string name="clear_logs">Clear logs</string>
+    <string name="manual_log_management_desc">Manually manage log files</string>
+    <string name="enable_auto_cleanup_now">Enable auto cleanup</string>
+    <string name="select_auto_cleanup_period">Select auto cleanup period:</string>
+    <string name="will_auto_delete_logs">Will auto delete log files older than %d days</string>
+    <string name="execute_cleanup_immediately">Execute cleanup immediately?</string>
+    <string name="log_file_list">Log file list</string>
+    <string name="refresh">Refresh</string>
+    <string name="clear_log_dialog_title">Clear logs</string>
+    <string name="select_clear_option">Select clear option:</string>
+    <string name="clear_all_logs">Clear all log files</string>
+    <string name="clear_logs_before_days">Clear logs before specified days</string>
+    <string name="export_log_dialog_title">Export logs</string>
+    <string name="select_export_range">Select export range:</string>
+    <string name="export_all_logs">Export all log files</string>
+    <string name="export_last_7_days">Export last 7 days</string>
+    <string name="export_today_only">Export today only</string>
+    <string name="export">Export</string>
+    <string name="failed_to_load_log_content">Failed to load log content</string>
+
+    <!-- SMS Test Screen strings -->
+    <string name="foreground_service_status">Foreground service status</string>
+    <string name="running">Running</string>
+    <string name="not_running">Not running</string>
+    <string name="last_received_sms">Last received SMS</string>
+    <string name="no_record">No record</string>
+    <string name="duplicate_prevention_cache">Duplicate prevention cache</string>
+    <string name="cache_entries">Cache entries: %d</string>
+    <string name="detailed_permission_status">Detailed permission status</string>
+    <string name="basic_sms_permissions">Basic SMS permissions</string>
+    <string name="granted">Granted</string>
+    <string name="missing_permissions">Missing: %s</string>
+    <string name="system_sms_access_permission">System SMS access permission</string>
+    <string name="needs_manual_enable">Needs manual enable</string>
+    <string name="default_sms_app_status">Default SMS app status</string>
+    <string name="is_default_app">Is default app</string>
+    <string name="not_default_app">Not default app</string>
+    <string name="special_access_permissions">Special access permissions</string>
+    <string name="needs_special_permissions">Needs special permissions</string>
+    <string name="normal">Normal</string>
+    <string name="overall_permission_status">Overall permission status</string>
+    <string name="fully_ready">Fully ready</string>
+    <string name="has_issues">Has issues</string>
+    <string name="refresh_service_status">Refresh service status</string>
+    <string name="test_active_time_logic">Test active time logic</string>
+    <string name="sms_test_input">SMS test input</string>
+    <string name="sender_number">Sender number</string>
+    <string name="sms_content">SMS content</string>
+    <string name="test_sms_matching">Test SMS matching</string>
+    <string name="preset_test_cases">Preset test cases</string>
+    <string name="china_mobile_verification">[China Mobile] Your verification code is 123456, please use within 5 minutes.</string>
+    <string name="icbc_transaction_notice">[ICBC] Your account ending with 1234 transferred 500 yuan on Dec 1st, balance 1000 yuan.</string>
+    <string name="china_unicom_balance_notice">[China Unicom] Your balance is insufficient, please recharge.</string>
+    <string name="taobao_verification">[Taobao] Verification code 789012, for login, valid for 5 minutes.</string>
+    <string name="test_results">Test results</string>
+    <string name="test_failed_error">Test failed: %s</string>
+    <string name="keyword_matching">Keyword matching</string>
+    <string name="matched">Matched</string>
+    <string name="not_matched">Not matched</string>
+    <string name="active_time_period">Active time period</string>
+    <string name="in_time_period">In time period</string>
+    <string name="not_in_time_period">Not in time period</string>
+    <string name="should_forward">Should forward</string>
+    <string name="extract_verification_code">Extract verification code</string>
+    <string name="matched_keywords">Matched keywords: %s</string>
+
+    <!-- Log Management Screen -->
+    <string name="log_files">Log Files</string>
+
+    <!-- Email Config Screen -->
+    <string name="send_test_email_desc">Send test email to verify configuration</string>
+    <string name="qq_smtp_step1_desc">1. Login to QQ Email web version\n2. Click "Settings" in top left\n3. Select "Account" tab\n4. Find "POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV Service"\n5. Enable "IMAP/SMTP Service"</string>
+    <string name="step_2_get_auth_code">Step 2: Get Authorization Code</string>
+    <string name="qq_smtp_step2_desc">1. When enabling SMTP service, security verification is required\n2. After successful verification, authorization code will be displayed\n3. Copy and save this authorization code, it is your email password</string>
+    <string name="step_3_fill_config">Step 3: Fill Configuration</string>
+    <string name="qq_smtp_config_desc">• SMTP Server: smtp.qq.com\n• Port: 587\n• Enable TLS: Yes\n• Sender Email: Your QQ email address\n• Password: The authorization code obtained</string>
+    <string name="outlook_email_smtp_tutorial">Outlook/Hotmail Email SMTP Configuration Tutorial</string>
+    <string name="step_1_enable_2fa">Step 1: Enable Two-Factor Authentication</string>
+    <string name="outlook_smtp_2fa_desc">1. Login to Microsoft account security page\n2. Select "Advanced security options"\n3. Enable "Two-step verification"</string>
+    <string name="step_2_create_app_password">Step 2: Create App Password</string>
+    <string name="outlook_app_password_desc">1. On two-step verification page select "Create new app password"\n2. Select "Mail" app\n3. Copy the generated app password</string>
+    <string name="outlook_final_config_desc">• SMTP Server: smtp.office365.com\n• Port: 587\n• Enable TLS: Yes\n• Sender Email: Your Outlook email address\n• Password: The app password created</string>
+
+    <!-- Additional UI strings -->
+    <!-- Template Screen missing strings -->
+    <string name="email_template_label">Email Template</string>
+    <string name="use_default_template">Use Default Template</string>
+    <string name="verification_code_template">Verification Code Template</string>
+    <string name="save_settings">Save Settings</string>
+    <string name="security_warning">⚠️ Security Warning</string>
+    <string name="no_filter_warning_message">After enabling no-filter forward mode, all received SMS will be forwarded, including SMS that may contain sensitive information (such as verification codes, bank notifications, etc.).\n\nAre you sure you want to continue?</string>
+    <string name="continue_enable">Continue to Enable</string>
+
+    <!-- Keep the service alive (Service & Permission Settings screen) -->
+    <string name="keep_alive_title">Keep receiving SMS every day</string>
+    <string name="keep_alive_intro">A silent foreground service keeps this app in the system\'s active list. Without it, Android downgrades the app to a restricted background state about 24 hours after you last open it, and the phone may freeze it entirely — SMS then silently stops arriving. The service itself sleeps between checks and costs almost no battery.</string>
+    <string name="keep_alive_battery_title">Unrestricted battery</string>
+    <string name="keep_alive_battery_desc">Prevents the system from throttling or killing the listening service while the screen is off.</string>
+    <string name="keep_alive_autostart_title">Autostart</string>
+    <string name="keep_alive_autostart_desc">Lets the phone bring the app back after a reboot or a cleanup by the system.</string>
+    <string name="keep_alive_autostart_action">Open</string>
+    <string name="keep_alive_state_done">Configured</string>
+    <string name="keep_alive_state_pending">Action needed</string>
+    <string name="keep_alive_footer">A background watchdog (WorkManager) also re-activates the service automatically if it is ever killed.</string>
+
+    <string name="menu">Menu</string>
+    <string name="go_to_debug_screen">Go to Debug Screen</string>
+    <string name="go_to_log_management">Go to Log Management</string>
+    <string name="go_to_forward_records">Go to Forward Records</string>
+    <string name="go_to_language_settings">Language Settings</string>
+    <string name="confirm_language_change">Confirm Language Change</string>
+    <string name="language_change_message">Change app language to %1$s? The app will restart.</string>
+    <string name="permission_status_title">Service Status</string>
+    <string name="debug_tools_title">Debug Tools</string>
+    <string name="debug_tools_desc">Access debug and log management screens</string>
+
+    <!-- Template Screen default templates -->
+    <string name="default_email_template_sms">SMS from {sender}:\n\n{content}\n\nReceived at: {time}</string>
+    <string name="default_email_template_verification">Verification code: {code}\n\nFrom: {sender}\nTime: {time}\n\nFull content: {content}</string>
+
+    <!-- SmsTestScreen log messages -->
+    <string name="log_test_active_time">🧪 Manual test of active time</string>
+    <string name="log_enabled_status">Enabled status: %1$s</string>
+    <string name="log_start_time">Start time: %1$s</string>
+    <string name="log_end_time">End time: %1$s</string>
+    <string name="log_current_time">Current time: %1$s</string>
+    <string name="log_is_in_active_time_result">isInActiveTime result: %1$b</string>
+
+    <!-- Error messages -->
+    <string name="unknown_error">Unknown error</string>
+
+    <!-- Permission change and restart -->
+    <string name="permission_granted_restart_app">Permissions granted successfully, restart app</string>
+    <string name="restarting_app">Restarting app…</string>
+
+    <!-- Email content i18n -->
+    <string name="test_email_subject">PigeonPost Test Email</string>
+    <string name="test_email_body">This is a test email to verify that the email configuration is correct.</string>
+    <string name="sms_email_new_sms">New SMS received</string>
+    <string name="sms_email_sender">Sender: %s</string>
+    <string name="sms_email_received_time">Received time: %s</string>
+    <string name="sms_email_content">SMS content:</string>
+    
+    <!-- Email config validation errors -->
+    <string name="email_config_empty">Email configuration is not set. Please configure email settings first.</string>
+    <string name="email_config_smtp_server_empty">SMTP server address cannot be empty</string>
+    <string name="email_config_sender_email_empty">Sender email address cannot be empty</string>
+    <string name="email_config_recipient_email_empty">Recipient email address cannot be empty</string>
+    <string name="email_config_password_empty">Email password/authorization code cannot be empty</string>
+    <string name="email_config_subject_empty">Email subject cannot be empty</string>
+    <string name="permission_issue_missing_basic">Missing basic SMS permissions: %s</string>
+    <string name="permission_issue_sms_appops">SMS access permission needs to be enabled in system settings</string>
+    <string name="permission_issue_battery">App is not ignoring battery optimization, may affect background SMS reception</string>
+    <string name="permission_issue_autostart">Missing autostart permission, app may be killed in background</string>
+    <string name="permission_issue_special_access">Android 10+ systems require additional permissions or set as default SMS app</string>
+    <string name="permission_issue_normal">Permission status is normal</string>
+    <string name="permission_fix_basic">Please click \'Request Permissions\' to grant SMS-related permissions</string>
+    <string name="permission_fix_sms_appops">Please enable SMS access permission in system settings</string>
+    <string name="permission_fix_battery">Please set app to ignore battery optimization to ensure background operation</string>
+    <string name="permission_fix_autostart">Please go to settings and enable autostart permission for the app</string>
+    <string name="permission_fix_special_access">Recommend setting app as default SMS app, or manually enable all related permissions</string>
+    <string name="permission_fix_normal">Permission configuration is correct</string>
+
+    <!-- Save confirmation dialogs -->
+    <string name="confirm_save">Save</string>
+    <string name="confirm_save_title">Save changes?</string>
+    <string name="confirm_save_template_message">Your keyword, matching and email template settings will be replaced. This cannot be undone.</string>
+    <string name="confirm_save_email_message">Your email server, account and recipient settings will be replaced. This cannot be undone.</string>
+    <string name="confirm_save_active_time_message">Your active time period will be replaced and take effect on the next incoming message. This cannot be undone.</string>
+    <string name="app_version_format">Version %1$s (%2$d)</string>
+    <string name="debug_password_title">Debug menu</string>
+    <string name="debug_password_label">Password</string>
+    <string name="debug_password_incorrect">Incorrect password</string>
+    <string name="debug_change_password">Change debug password</string>
+    <string name="debug_change_password_current">Current password</string>
+    <string name="debug_change_password_new">New password</string>
+    <string name="debug_change_password_confirm">Confirm new password</string>
+    <string name="debug_change_password_mismatch">The two new passwords do not match</string>
+    <string name="debug_change_password_done">Debug password updated</string>
+    <string name="debug_change_password_too_short">Use at least 4 characters</string>
+    <string name="debug_launcher_title">Launcher icon</string>
+    <string name="hide_mode_a_title">Method 1: hide in launcher (reversible)</string>
+    <string name="hide_mode_a_summary">Uses your home screen\'s own hidden-apps list. The app changes nothing, so you can always undo it, and it keeps working if you switch launcher.</string>
+    <string name="hide_mode_a_instructions">Show instructions</string>
+    <string name="hide_mode_a_step1">Open your home screen\'s app list or settings.</string>
+    <string name="hide_mode_a_step2">Find PigeonPost in the hidden apps or app list and hide it.</string>
+    <string name="hide_mode_a_step3">To get the icon back, use the same menu and choose show.</string>
+    <string name="hide_mode_a_caveat">Some launchers also hide the app from notifications and searches. Settings can still reach it while the launcher entry stays hidden.</string>
+    <string name="hide_mode_b_title">Method 2: disable the icon inside the app (one way only)</string>
+    <string name="hide_mode_b_summary">Disables the launcher component, so the icon disappears from every launcher. Android offers no undo, and this app cannot re-enable it once it is gone.</string>
+    <string name="hide_mode_b_action">Disable launcher icon</string>
+    <string name="hide_mode_b_disabled">The icon is already hidden.</string>
+    <string name="hide_mode_b_confirm_title">Hide the icon for good?</string>
+    <string name="hide_mode_b_risk">The icon will be removed from the launcher. If you uninstall the app, or the launcher clears its data, the icon is gone until you run the restore command. This cannot be undone from the app.</string>
+    <string name="hide_mode_b_restore_hint">Recovery command: adb shell pm enable %1$s</string>
+    <string name="hide_mode_b_confirm_label">Type %1$s to confirm</string>
+    <string name="hide_mode_b_confirm_word">HIDE</string>
+    <string name="hide_mode_b_confirm_action">Hide the icon</string>
+    <string name="hide_restore_title">Icon already hidden?</string>
+    <string name="hide_restore_summary">Run this on a computer with the phone connected over USB debugging. The icon comes back on the next launch.</string>
+    <string name="copy">Copy</string>
+    <string name="debug_support_title">Support</string>
+    <string name="debug_support_summary">Build a package to send to whoever is helping you. It contains your settings with the identifying values left out, your phone and Android version, which permissions are granted, and recent logs. Your mail addresses, mail password and keywords are not included.</string>
+    <string name="debug_support_action">Create support package</string>
+    <string name="debug_support_building">Creating…</string>
+    <string name="debug_support_failed">The package could not be created. See the logs for details.</string>
+    <string name="debug_support_ready">The package is ready. It will be deleted shortly after you share it.</string>
+    <string name="debug_support_password">Archive password: %1$s</string>
+    <string name="debug_support_send">Send via email</string>
+    <string name="diagnostic_subject">PigeonPost diagnostic package</string>
+    <string name="drawer_advanced_options">Advanced options</string>
+    <string name="debug_more_options">More options</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+</resources>

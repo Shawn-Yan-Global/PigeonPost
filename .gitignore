@@ -1,0 +1,49 @@
+# macOS system files
+.DS_Store
+
+# Gradle build folders and caches
+.gradle/
+**/build/
+
+# Kotlin compiler cache (only if exsit)
+.kotlin/
+
+# Local config files (never commit SDK paths etc)
+local.properties
+
+# IntelliJ / Android Studio project files
+*.iml
+
+# Ignore everything in .idea
+.idea/*
+
+# Except these directories/files that store project-level settings to share
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/runConfigurations/
+!.idea/vcs.xml
+!.idea/misc.xml
+
+# Ignore personal workspace files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries/
+.idea/libraries/
+.idea/caches/
+.idea/modules.xml
+.idea/assetWizardSettings.xml
+.idea/usage.statistics.xml
+.idea/jsLibraryMappings.xml
+
+# Android captures and native build files
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Ignore APKs and build output
+**/release/
+**/debug/
+
+# But do NOT ignore source code inside src/release or src/debug
+!**/src/**/release/
+!**/src/**/debug/

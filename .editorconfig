@@ -1,0 +1,39 @@
+# EditorConfig for ktlint
+# https://pinterest.github.io/ktlint/
+
+root = true
+
+[*.{kt,kts}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 140
+trim_trailing_whitespace = true
+
+# Kotlin specific
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# Import ordering
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
+
+# Disable ktlint rules that don't fit Android/Compose projects
+[*.{kt,kts}]
+# Allow wildcard imports
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_filename = disabled
+
+# Compose functions start with uppercase (this is correct for Compose)
+ktlint_standard_function-naming = disabled
+
+# Allow companion object constants to use uppercase (Android convention)
+ktlint_standard_property-naming = disabled
+
+# Relax max line length (120 is too strict for modern screens)
+ktlint_standard_max-line-length = disabled
+
+# Allow consecutive comments/KDocs (useful for documentation)
+ktlint_standard_no-consecutive-comments = disabled
+

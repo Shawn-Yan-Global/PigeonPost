@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">信鸽转发</string>
+    <string name="app_language">Language Settings</string>
+    <!-- 权限相关字符串 -->
+    <string name="permission_autostart_required">需要在设置中开启"自启动权限"</string>
+    <string name="permission_autostart_help">为确保应用能够在后台持续运行并接收短信，请开启自启动权限：\n\n• 小米 (MIUI)：安全中心 → 应用管理 → 自启动管理\n• 华为/荣耀：手机管家 → 应用启动管理 → 受保护应用\n• OPPO：设置 → 电池 → 应用自启动\n• Vivo：设置 → 更多设置 → 权限管理 → 自启动\n• 三星：设置 → 应用 → 自动启动\n\n请为"信鸽转发"开启自启动权限以提高可靠性。</string>
+    
+    <string name="permission_battery_optimization">需要在设置中忽略电池优化</string>
+    <string name="permission_read_sms">需要读取短信权限</string>
+    <string name="permission_receive_sms">需要接收短信权限</string>
+    <string name="permission_default_sms_app">需要默认短信应用权限</string>
+    <string name="permission_notification">需要通知权限</string>
+    <string name="permission_sms_appops">需要在系统设置中开启短信访问权限</string>
+    <string name="autostart_permission_title">自启动权限</string>
+    <string name="autostart_permission_desc">开启自启动权限可以确保应用在设备重启或被清理后能够自动恢复运行并接收短信。</string>
+    
+    <!-- SMS Service权限帮助 -->
+    <string name="sms_service_permission_help_title">📱 需要开启短信服务权限</string>
+    <string name="sms_service_permission_help_desc">除了读取和接收短信权限外，您还需要在系统设置中开启短信服务（SMS Service）权限：\n\n1. 点击下方"打开设置"按钮\n2. 找到"短信"或"消息访问"选项\n3. 为信鸽转发启用短信访问权限\n\n此权限允许应用在后台读取短信消息。</string>
+
+    <!-- 权限状态消息 -->
+    <string name="status_service_running_normal">服务运行正常</string>
+    <string name="status_service_running_no_notification">服务运行中 (建议开启通知)</string>
+    <string name="status_service_stopped">服务已停止</string>
+    <string name="status_need_system_permissions">需要开启系统权限</string>
+    <string name="status_need_basic_permissions">需要授予基本权限</string>
+
+    <!-- 权限状态详情 -->
+    <string name="status_missing_basic_sms">缺少基本短信权限</string>
+    <string name="status_need_sms_access">需要开启系统短信访问权限</string>
+    <string name="status_all_permissions_ready">所有权限已就绪</string>
+    <string name="status_notification_enabled">通知权限已开启</string>
+    <string name="status_notification_recommended">建议开启通知权限</string>
+
+    <!-- 按钮文本 -->
+    <string name="button_request_permissions">请求权限</string>
+    <string name="button_open_settings">打开设置</string>
+    <string name="button_set_as_default">设为默认</string>
+    <string name="button_battery_optimization">电池优化</string>
+    <string name="button_autostart_permission">去设置</string>
+    <string name="button_confirm_autostart">我已设置完成</string>
+    <string name="autostart_permission_warning">⚠️ 建议：开启自启动权限可提高应用可靠性</string>
+    <string name="autostart_confirmed_toast">✅ 自启动权限已确认</string>
+    <string name="button_enable_notifications">开启通知</string>
+    <string name="button_restart_app">重启应用</string>
+    <string name="permission_refresh_hint_title">权限已更新？建议重启</string>
+    <string name="permission_refresh_hint_desc">如果您刚刚修改了系统权限，请重启应用以确保所有服务重新初始化。</string>
+
+    <!-- 权限开关Toast消息 -->
+    <string name="toast_grant_basic_permissions">请先授予基本短信权限</string>
+    <string name="toast_enable_sms_access">请在系统设置中开启短信访问权限</string>
+    <string name="toast_disable_battery_optimization">请关闭电池优化</string>
+    <string name="toast_enable_autostart">请开启自启动权限</string>
+    <string name="toast_complete_permission_setup">请完成权限设置</string>
+
+    <!-- 服务状态横幅提醒及提示 -->
+    <string name="service_permission_status_title">服务与权限状态</string>
+    <string name="drawer_service_status_entry">服务与权限设置</string>
+    <string name="drawer_service_status_desc">管理短信监听服务、权限与电池优化</string>
+    <string name="banner_service_stopped_prompt">短信监听服务未启动，点击前往开启</string>
+    <string name="banner_permission_issue_prompt">需要配置权限或设置，点击前往配置</string>
+    <string name="banner_open_drawer">去设置</string>
+    <string name="template_saved_title">设置已保存</string>
+    <string name="template_saved_service_warning">模板已保存！但短信监听服务尚未开启，转发功能暂不会生效。</string>
+    <string name="template_saved_enable_now">前往设置开启</string>
+    <string name="template_saved_dismiss">稍后再说</string>
+
+    <!-- 活跃时段界面 -->
+    <string name="active_time_title">活跃时段配置</string>
+    <string name="enable_active_time_control">启用活跃时段控制</string>
+    <string name="active_time_description">短信转发仅在指定时间段内工作</string>
+    <string name="time_periods">时间段</string>
+    <string name="add_time_period">添加时间段</string>
+    <string name="configure_time_period">配置时间段</string>
+    <string name="start_time">开始时间</string>
+    <string name="end_time">结束时间</string>
+    <string name="cross_day_period">跨天时间段</string>
+    <string name="status_disabled">活动时间已关闭，全日监控中</string>
+    <string name="status_active">当前处于活动期，监控中</string>
+    <string name="status_paused">当前不在活动期，已暂停</string>
+    <string name="cross_day_info">这将创建一个跨天时间段</string>
+    <string name="active_periods_24h">活跃时段（24小时视图）</string>
+    <string name="active">活跃</string>
+    <string name="inactive">不活跃</string>
+    <string name="how_it_works">工作原理</string>
+
+    <string name="current_language">当前语言</string>
+    <string name="log_output_english">日志输出语言：英文</string>
+    <string name="log_output_chinese">日志输出语言：中文</string>
+    <string name="active_time_help">• 支持跨天时间段（如 22:00 – 06:00）\n• 可配置多个时间段\n• 短信转发仅在指定时间内活跃\n• 所有时间均使用24小时格式以确保精确性</string>
+    <string name="save">保存</string>
+    <!-- Main Screen -->
+    <string name="app_title">信鸽</string>
+    <string name="template_settings">模板设置</string>
+    <string name="email_config">邮箱配置</string>
+    <string name="active_time">活跃时段</string>
+
+    <!-- Guide Screen -->
+    <string name="email_guide_description">选择您的邮箱类型，按照步骤配置SMTP服务</string>
+    <string name="select_email_type">选择邮箱类型</string>
+    <string name="_163_email">163邮箱</string>
+    <string name="gmail">Gmail</string>
+    <string name="outlook">Outlook</string>
+    <string name="other_email">其他邮箱</string>
+    <string name="config_steps">配置步骤</string>
+
+    <!-- Common UI Elements -->
+    <string name="confirm">确认</string>
+    <string name="close">关闭</string>
+    <string name="back">返回</string>
+    <string name="next">下一步</string>
+    <string name="skip">跳过</string>
+    <string name="finish">完成</string>
+    <string name="settings">设置</string>
+    <string name="help">帮助</string>
+
+    <!-- QQ Email Guide -->
+    <string name="qq_email_steps">QQ邮箱配置步骤</string>
+    <string name="step_login_qq">登录QQ邮箱</string>
+    <string name="step_login_qq_desc">打开QQ邮箱网页版 (mail.qq.com) 并登录您的QQ邮箱账户</string>
+    <string name="step_enable_smtp">开启SMTP服务</string>
+    <string name="step_enable_smtp_desc">点击右上角‘设置’ → 选择‘账户’ → 找到‘POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务’ → 开启‘POP3/SMTP服务’</string>
+    <string name="step_get_auth_code">获取授权码</string>
+    <string name="step_get_auth_code_desc">系统将通过短信向您的手机发送授权码，保存此代码用于邮箱密码字段</string>
+
+    <!-- Outlook Email Guide -->
+    <string name="outlook_email_steps">Outlook邮箱配置步骤</string>
+
+    <!-- Notification related strings -->
+    <string name="sms_received_notification">短信接收通知</string>
+    <string name="sms_received_notification_desc">当接收到短信时的即时通知</string>
+    <string name="sms_forward_result">短信转发结果</string>
+    <string name="sms_forward_notification">短信转发通知</string>
+    <string name="email_template_default">短信来自 {sender}:\n\n{content}\n\n短信收到时间: {time}</string>
+    <string name="sms_forward_result_desc">短信转发成功或失败的结果通知</string>
+    <string name="status_processing">正在处理中…</string>
+    <string name="status_service_not_running">服务未运行</string>
+    <string name="status_forward_failed">转发失败</string>
+    <string name="sms_received_title">📱 收到短信</string>
+    <string name="sms_from">来自：%s</string>
+    <string name="sms_notification_details">发送者：%1$s\n内容预览：%2$s\n状态：%3$s</string>
+    <string name="sms_forward_success_title">✅ 短信转发成功</string>
+    <string name="sms_forward_success">来自【%s】的短信已成功转发</string>
+    <string name="sms_forward_success_with_keyword">来自【%1$s】的短信已成功转发（匹配关键词：%2$s）</string>
+    <string name="sms_forward_failed_title">❌ 短信转发失败</string>
+    <string name="sms_forward_failed">来自【%1$s】的短信转发失败：%2$s</string>
+
+    <!-- Service notification related strings -->
+    <string name="sms_monitor_service">短信监控服务</string>
+    <string name="sms_monitor_service_desc">用于保持短信监控服务运行，确保后台接收短信</string>
+    <string name="permission_monitor_service">权限监控</string>
+    <string name="permission_monitor_service_desc">监控短信权限状态</string>
+    <string name="permission_disabled_title">⚠️ 权限被关闭</string>
+    <string name="permission_disabled_desc">短信监听已被系统关闭，请重新授权以继续使用信鸽助手</string>
+    <string name="pigeon_sms_listener">信鸽 - 短信监听</string>
+    <string name="active_period_monitoring">活跃时段 - 正在监控短信</string>
+    <string name="inactive_period_low_power">非活跃时段 - 低功耗模式</string>
+    <string name="monitoring_sms">正在监控短信…</string>
+    <string name="stop_listening">⏹️ 停止监听</string>
+
+    <!-- Debug Screen -->
+    <string name="debug_panel">调试面板</string>
+    <string name="sms_test">短信测试</string>
+    <string name="forward_records">转发记录</string>
+    <string name="log_management">日志管理</string>
+
+    <!-- ActiveTime Screen -->
+    <string name="quick_config">快捷配置</string>
+    <string name="morning_rush">早高峰</string>
+    <string name="evening_rush">晚高峰</string>
+    <string name="work_hours">工作时间</string>
+    <string name="all_day_listening">全天监听</string>
+    <string name="time_settings">时间设置</string>
+
+    <!-- Template Screen -->
+    <string name="keyword_settings">关键词设置</string>
+    <string name="keyword_settings_desc">每行输入一个关键词，匹配的短信将被转发</string>
+    <string name="keywords_placeholder">关键词（每行一个）</string>
+    <string name="no_filter_warning">⚠️ 无过滤模式下，关键词设置将被忽略</string>
+    <string name="matching_settings">匹配设置</string>
+    <string name="no_filter_forward_mode">无过滤全转发模式</string>
+    <string name="no_filter_mode_desc_enabled">⚠️ 所有短信都将被转发</string>
+    <string name="no_filter_mode_desc_disabled">仅转发匹配关键词的短信</string>
+    <string name="case_sensitive">区分大小写</string>
+
+    <!-- Email Config Screen -->
+    <string name="common_email_config">常用邮箱配置</string>
+    <string name="email_type_desc">选择您的邮箱类型，自动填充配置信息</string>
+    <string name="qq_email">QQ邮箱</string>
+    <string name="netease_163_email">163邮箱</string>
+    <string name="email_config_guide">邮箱配置向导</string>
+    <string name="expand_guide">展开向导</string>
+    <string name="collapse_guide">收起向导</string>
+    <string name="guide_desc">点击展开查看详细的邮箱配置教程</string>
+    <string name="smtp_server_config">SMTP服务器配置</string>
+    <string name="smtp_server_address">SMTP服务器地址</string>
+    <string name="port">端口</string>
+    <string name="use_tls_encryption">使用TLS加密</string>
+    <string name="email_account_config">邮箱账户配置</string>
+    <string name="sender_email">发件人邮箱</string>
+
+    <!-- Common UI strings -->
+    <string name="select_all">全选</string>
+    <string name="delete">删除</string>
+    <string name="cancel">取消</string>
+    <string name="edit">编辑</string>
+    <string name="no_sms_records">暂无短信记录</string>
+    <string name="notification_settings">通知设置</string>
+    <string name="clean_records">清理记录</string>
+    <string name="selected_records">已选择 %d 条记录</string>
+    <string name="select_records_to_delete">选择要删除的记录</string>
+    <string name="forward_records_title">转发记录</string>
+    <string name="recent_sms_desc">显示最近收到的短信记录和转发状态</string>
+
+    <!-- Log Screen -->
+    <string name="log_overview">日志概览</string>
+    <string name="log_files_count">%d 个日志文件</string>
+    <string name="total_size">总大小</string>
+    <string name="latest_file">最新文件</string>
+    <string name="last_updated">最后更新</string>
+    <string name="quick_actions">快速操作</string>
+    <string name="view_all_log_files">查看所有日志文件</string>
+
+    <!-- SMS Test Screen -->
+    <string name="service_status_check">服务状态检查</string>
+    <string name="sms_monitor_service_status">短信监控服务</string>
+    <string name="enabled">已启用</string>
+    <string name="disabled">未启用</string>
+    <string name="active_time_restriction">活跃时段限制</string>
+    <string name="disabled_all_day_monitor">未启用（全天监控）</string>
+    <string name="current_time_status">当前时段状态</string>
+    <string name="in_active_time">在活跃时段内</string>
+    <string name="not_in_active_time">不在活跃时段内</string>
+    <string name="test_sms_content">测试短信内容</string>
+    <string name="test_sms_default_content">【测试】您的验证码是123456，请在5分钟内使用。</string>
+    <string name="active_time_status_details">活跃时段状态详情</string>
+    <string name="active_time_range">活跃时段范围</string>
+    <string name="keyword_count">关键词数量</string>
+    <string name="keywords_unit">个</string>
+    <string name="email_configuration">邮箱配置</string>
+    <string name="configured">已配置</string>
+    <string name="not_configured">未配置</string>
+
+    <!-- Template Screen additional strings -->
+    <string name="matching_logic">匹配逻辑</string>
+    <string name="contains_any_keyword">包含任意一个关键词</string>
+    <string name="contains_all_keywords">必须包含全部关键词</string>
+    <string name="current_template">当前模板</string>
+    <string name="no_keywords_set">暂无关键词设置</string>
+    <string name="keywords_label">关键词：%s</string>
+    <string name="matching_logic_label">匹配逻辑：%s</string>
+    <string name="case_sensitive_label">区分大小写：%s</string>
+    <string name="contains_any">包含任意一个</string>
+    <string name="contains_all">必须包含全部</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="use_email_template">使用邮件模板</string>
+    <string name="email_template_settings">邮件模板设置</string>
+    <string name="template_placeholders_desc">使用占位符自定义邮件内容格式：\n• {sender} - 短信发送者\n• {content} - 短信内容\n• {time} - 接收时间\n• {code} - 提取的验证码（如果包含）</string>
+
+    <!-- Additional Log Screen strings -->
+    <string name="log_files_total">日志文件总数</string>
+    <string name="files_unit">个</string>
+    <string name="total_size_kb">%d KB</string>
+    <string name="refresh_log_list">刷新日志列表</string>
+    <string name="export_logs">导出日志</string>
+    <string name="clean_logs">清理日志</string>
+    <string name="clear_logs_desc">该操作将删除所有日志文件，且无法恢复，请谨慎操作。</string>
+    <string name="export_logs_desc">将日志文件打包为ZIP以便分享或备份。</string>
+    <string name="clear_all">清空全部</string>
+    <string name="auto_cleanup_settings">自动清理设置</string>
+    <string name="auto_cleanup_log_files">自动清理日志文件</string>
+    <string name="cleanup_period">清理周期</string>
+    <string name="days_ago">%d天前</string>
+    <string name="enable_auto_cleanup">启用自动清理</string>
+    <string name="auto_delete_logs_desc">自动删除%d天前的日志</string>
+    <string name="manual_manage_logs">手动管理日志文件</string>
+
+    <!-- Additional Email Config strings -->
+    <string name="password_auth_code">密码/授权码</string>
+    <string name="recipient_email">收件人邮箱</string>
+    <string name="email_subject">邮件主题</string>
+    <string name="test_email">测试邮件</string>
+    <string name="test_email_desc">发送测试邮件验证配置是否正确</string>
+    <string name="sending_test_email">正在发送测试邮件…</string>
+    <string name="test_email_success">测试邮件发送成功！</string>
+    <string name="send_failed">发送失败：%s</string>
+    <string name="retry">重试</string>
+    <string name="send_test_email">发送测试邮件</string>
+    <string name="send_again">再发一次</string>
+    <string name="save_config">保存配置</string>
+    <string name="qq_email_smtp_tutorial">QQ邮箱SMTP配置教程</string>
+    <string name="step_1_enable_smtp">步骤1：开启SMTP服务</string>
+    <string name="qq_email_steps_desc">1. 登录QQ邮箱网页版\n2. 点击左上角的\"设置\"\n3. 选择\"账户\",选择\"账户与安全\"\n4.找到\"安全设置\"选项卡5. 找到\"POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务\"\n6. 开启\"IMAP/SMTP服务\"</string>
+
+
+    <!-- Missing strings for new features -->
+    <string name="notification_settings_desc">通知设置</string>
+    <string name="cleanup_records_desc">清理记录</string>
+    <string name="edit_desc">编辑</string>
+    <string name="sms_will_show_here">收到短信后将显示在这里</string>
+    <string name="confirm_delete_title">确认删除</string>
+    <string name="confirm_delete_message">确定要删除选中的 %d 条记录吗？此操作不可撤销。</string>
+    <string name="cleanup_records_title">清理记录</string>
+    <string name="select_cleanup_time_range">选择要清理的记录时间范围：</string>
+    <string name="days_ago_label">%d天前</string>
+    <string name="will_delete_records_before_days">将删除 %d 天前的所有记录</string>
+    <string name="cleanup">清理</string>
+    <string name="forward_record_settings_title">转发记录设置</string>
+    <string name="notification_settings_section">通知设置</string>
+    <string name="auto_cleanup_settings_section">自动清理设置</string>
+    <string name="auto_cleanup_forward_records">自动清理转发记录</string>
+    <string name="auto_delete_records_desc">自动删除%d天前的记录</string>
+    <string name="days_label">%d天</string>
+    <string name="done">完成</string>
+    <string name="enable_auto_cleanup_title">启用自动清理</string>
+    <string name="execute_cleanup_now_question">是否立即执行一次清理任务？</string>
+    <string name="forwarded">已转发</string>
+    <string name="forward_failed">转发失败</string>
+    <string name="not_forwarded">未转发</string>
+    <string name="error_info">错误信息</string>
+    <string name="retry_forward">重试转发</string>
+    <string name="force_retry">强制重试</string>
+    <string name="retry_with_filter">应用过滤重试</string>
+    <string name="force_retry_confirm_title">确认强制重试</string>
+    <string name="force_retry_confirm_message">强制重试将无视过滤规则重新转发此短信，是否继续？</string>
+    <string name="sms_not_match_filter">短信不符合过滤规则</string>
+    <string name="sms_cache_duplicate">检测到重复短信（%d秒前已收到相同内容）</string>
+    <string name="confirm_delete_single_title">确认删除</string>
+    <string name="confirm_delete_single_message">确定要删除此记录吗？此操作不可撤销。</string>
+    
+    <!-- 转发错误消息和提示 -->
+    <string name="forward_error_unknown">转发过程中发生未知错误</string>
+    <string name="forward_error_hint_auth">请检查邮箱账号和密码/授权码是否正确</string>
+    <string name="forward_error_hint_network">请检查网络连接后重试</string>
+    <string name="forward_error_hint_smtp">请检查SMTP服务器地址和端口配置</string>
+
+    <!-- Additional missing strings -->
+    <string name="sms_received_notification_title">短信接收通知</string>
+    <string name="forward_result_notification_title">转发结果通知</string>
+    <string name="forward_result_notification_desc">转发成功或失败时显示通知</string>
+    <string name="cleanup_now">立即清理</string>
+    <string name="cleanup_later">稍后清理</string>
+    <string name="select_language">选择语言</string>
+    <string name="note_warning">⚠️ 注意</string>
+    <string name="language_change_immediate">语言更改立即生效。新的日志消息将使用所选语言。</string>
+    <string name="previous_page">上一页</string>
+    <string name="next_page">下一页</string>
+    <string name="previous_pages_and_lines">第 %1$d 页（共 %2$d 页）\n总计 %3$d 行</string>
+    <string name="total_log_files">日志文件总数</string>
+    <string name="log_files_count_display">%d 个</string>
+    <string name="clear_logs">清理日志</string>
+    <string name="manual_log_management_desc">手动管理日志文件</string>
+    <string name="enable_auto_cleanup_now">启用自动清理</string>
+    <string name="select_auto_cleanup_period">选择自动清理周期：</string>
+    <string name="will_auto_delete_logs">将自动删除 %d 天前的日志文件</string>
+    <string name="execute_cleanup_immediately">是否立即执行一次清理任务？</string>
+    <string name="log_file_list">日志文件列表</string>
+    <string name="refresh">刷新</string>
+    <string name="clear_log_dialog_title">清理日志</string>
+    <string name="select_clear_option">选择清理选项：</string>
+    <string name="clear_all_logs">清理所有日志文件</string>
+    <string name="clear_logs_before_days">清理指定天数前的日志</string>
+    <string name="export_log_dialog_title">导出日志</string>
+    <string name="select_export_range">选择导出范围：</string>
+    <string name="export_all_logs">导出所有日志文件</string>
+    <string name="export_last_7_days">导出最近7天</string>
+    <string name="export_today_only">仅导出今天</string>
+    <string name="export">导出</string>
+
+    <!-- SMS Test Screen strings -->
+    <string name="failed_to_load_log_content">加载日志内容失败</string>
+    <string name="foreground_service_status">前台服务状态</string>
+    <string name="running">运行中</string>
+    <string name="not_running">未运行</string>
+    <string name="last_received_sms">最后接收短信</string>
+    <string name="no_record">暂无记录</string>
+    <string name="duplicate_prevention_cache">防重复缓存</string>
+    <string name="cache_entries">缓存数量: %d</string>
+    <string name="detailed_permission_status">详细权限状态</string>
+    <string name="basic_sms_permissions">基本短信权限</string>
+    <string name="granted">已授予</string>
+    <string name="missing_permissions">缺失：%s</string>
+    <string name="system_sms_access_permission">系统短信访问权限</string>
+    <string name="needs_manual_enable">需要手动开启</string>
+    <string name="default_sms_app_status">默认短信应用状态</string>
+    <string name="is_default_app">是默认应用</string>
+    <string name="not_default_app">非默认应用</string>
+    <string name="special_access_permissions">特殊访问权限</string>
+    <string name="needs_special_permissions">需要特殊权限</string>
+    <string name="normal">正常</string>
+    <string name="overall_permission_status">整体权限状态</string>
+    <string name="fully_ready">完全就绪</string>
+    <string name="has_issues">存在问题</string>
+    <string name="refresh_service_status">刷新服务状态</string>
+    <string name="test_active_time_logic">测试活跃时段逻辑</string>
+    <string name="sms_test_input">短信测试输入</string>
+    <string name="sender_number">发送者号码</string>
+    <string name="sms_content">短信内容</string>
+    <string name="test_sms_matching">测试短信匹配</string>
+    <string name="preset_test_cases">预设测试用例</string>
+    <string name="china_mobile_verification">【中国移动】您的验证码是123456，请在5分钟内使用。</string>
+    <string name="icbc_transaction_notice">【工商银行】您尾号1234的账户于12月1日转账500元，余额1000元。</string>
+    <string name="china_unicom_balance_notice">【中国联通】您的话费余额不足，请及时充值。</string>
+    <string name="taobao_verification">【淘宝网】验证码789012，用于登录，5分钟内有效。</string>
+    <string name="test_results">测试结果</string>
+    <string name="test_failed_error">测试失败：%s</string>
+    <string name="keyword_matching">关键词匹配</string>
+    <string name="matched">匹配</string>
+    <string name="not_matched">不匹配</string>
+    <string name="active_time_period">活跃时段</string>
+    <string name="in_time_period">在时段内</string>
+    <string name="not_in_time_period">不在时段内</string>
+    <string name="should_forward">应该转发</string>
+    <string name="extract_verification_code">提取验证码</string>
+    <string name="matched_keywords">匹配的关键词：%s</string>
+
+    <!-- Log Management Screen -->
+    <string name="log_files">日志文件</string>
+
+    <!-- Email Config Screen -->
+    <string name="send_test_email_desc">发送测试邮件验证配置是否正确</string>
+    <string name="qq_smtp_step1_desc">1. 登录QQ邮箱网页版\n2. 点击左上角的"设置"\n3. 选择"账户"选项卡\n4. 找到"POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务"\n5. 开启"IMAP/SMTP服务"</string>
+    <string name="step_2_get_auth_code">步骤2：获取授权码</string>
+    <string name="qq_smtp_step2_desc">1. 在开启SMTP服务时会要求验证密保\n2. 验证成功后会显示授权码\n3. 复制并保存这个授权码，它就是您的邮箱密码</string>
+    <string name="step_3_fill_config">步骤3：填写配置信息</string>
+    <string name="qq_smtp_config_desc">• SMTP服务器：smtp.qq.com\n• 端口：587\n• 启用TLS：是\n• 发件人邮箱：您的QQ邮箱地址\n• 密码：刚才获取的授权码</string>
+    <string name="outlook_email_smtp_tutorial">Outlook/Hotmail邮箱SMTP配置教程</string>
+    <string name="step_1_enable_2fa">步骤1：启用双重验证</string>
+    <string name="outlook_smtp_2fa_desc">1. 登录Microsoft账户安全页面\n2. 选择"高级安全选项"\n3. 启用"双重验证"</string>
+    <string name="step_2_create_app_password">步骤2：创建应用密码</string>
+    <string name="outlook_app_password_desc">1. 在双重验证页面选择"创建新的应用密码"\n2. 选择"邮件"应用\n3. 复制生成的应用密码</string>
+    <string name="outlook_final_config_desc">• SMTP服务器：smtp.office365.com\n• 端口：587\n• 启用TLS：是\n• 发件人邮箱：您的Outlook邮箱地址\n• 密码：刚才创建的应用密码</string>
+
+    <!-- Additional UI strings -->
+    <!-- Template Screen missing strings -->
+    <string name="email_template_label">邮件模板</string>
+    <string name="use_default_template">使用默认模板</string>
+    <string name="verification_code_template">验证码专用模板</string>
+    <string name="save_settings">保存设置</string>
+    <string name="security_warning">⚠️ 安全警告</string>
+    <string name="no_filter_warning_message">启用无过滤全转发模式后，所有接收到的短信都将被转发，包括可能包含敏感信息的短信（如验证码、银行通知等）。\n\n请确认是否继续？</string>
+    <string name="continue_enable">继续启用</string>
+
+    <!-- 保持服务存活（服务与权限状态页） -->
+    <string name="keep_alive_title">每天都能收到短信</string>
+    <string name="keep_alive_intro">一条静音的前台服务会让系统始终把本应用视为"正在使用"。没有它，Android 会在您超过 24 小时未打开应用后把应用降级为受限后台状态，国内厂商系统甚至会直接冻结进程——于是短信就悄无声息地不再送达。该服务在两次检查之间完全休眠，几乎不耗电。</string>
+    <string name="keep_alive_battery_title">电池优化无限制</string>
+    <string name="keep_alive_battery_desc">避免系统在熄屏后限制甚至杀死短信监听服务。</string>
+    <string name="keep_alive_autostart_title">自启动</string>
+    <string name="keep_alive_autostart_desc">允许手机在重启或系统清理之后自动把应用拉回后台。</string>
+    <string name="keep_alive_autostart_action">去设置</string>
+    <string name="keep_alive_state_done">已配置</string>
+    <string name="keep_alive_state_pending">待设置</string>
+    <string name="keep_alive_footer">同时还有一层后台守护（WorkManager），即使服务被误杀也会自动重新拉起。</string>
+
+    <string name="menu">菜单</string>
+    <string name="go_to_debug_screen">前往调试界面</string>
+    <string name="go_to_log_management">前往日志管理</string>
+    <string name="go_to_forward_records">前往转发记录</string>
+    <string name="go_to_language_settings">设置语言</string>
+    <string name="confirm_language_change">确认语言更改</string>
+    <string name="language_change_message">将应用语言更改为%1$s？应用将重新启动。</string>
+    <string name="permission_status_title">服务状态</string>
+    <string name="debug_tools_title">调试工具</string>
+    <string name="debug_tools_desc">访问调试和日志管理界面</string>
+
+    <!-- Template Screen default templates -->
+    <string name="default_email_template_sms">来自 {sender} 的短信：\n\n{content}\n\n接收时间：{time}</string>
+    <string name="default_email_template_verification">验证码：{code}\n\n来自：{sender}\n时间：{time}\n\n完整内容：{content}</string>
+
+    <!-- SmsTestScreen log messages -->
+    <string name="log_test_active_time">🧪 手动测试活跃时段</string>
+    <string name="log_enabled_status">启用状态: %1$s</string>
+    <string name="log_start_time">开始时间: %1$s</string>
+    <string name="log_end_time">结束时间: %1$s</string>
+    <string name="log_current_time">当前时间: %1$s</string>
+    <string name="log_is_in_active_time_result">isInActiveTime结果: %1$b</string>
+
+    <!-- Error messages -->
+    <string name="unknown_error">未知错误</string>
+
+    <!-- Permission change and restart -->
+    <string name="permission_granted_restart_app">权限变更成功，重启app</string>
+    <string name="restarting_app">正在重启应用…</string>
+
+    <!-- Email content i18n -->
+    <string name="test_email_subject">信鸽转发 测试邮件</string>
+    <string name="test_email_body">这是一封测试邮件，用于验证邮箱配置是否正确。</string>
+    <string name="sms_email_new_sms">收到新短信</string>
+    <string name="sms_email_sender">发送人：%s</string>
+    <string name="sms_email_received_time">接收时间：%s</string>
+    <string name="sms_email_content">短信内容：</string>
+    
+    <!-- Email config validation errors -->
+    <string name="email_config_empty">邮箱配置未设置，请先配置邮箱设置。</string>
+    <string name="email_config_smtp_server_empty">SMTP服务器地址不能为空</string>
+    <string name="email_config_sender_email_empty">发件人邮箱地址不能为空</string>
+    <string name="email_config_recipient_email_empty">收件人邮箱地址不能为空</string>
+    <string name="email_config_password_empty">邮箱密码/授权码不能为空</string>
+    <string name="email_config_subject_empty">邮件主题不能为空</string>
+    <string name="permission_issue_missing_basic">缺少基本短信权限：%s</string>
+    <string name="permission_issue_sms_appops">需要在系统设置中开启短信访问权限</string>
+    <string name="permission_issue_battery">应用未忽略电池优化，可能影响后台短信接收</string>
+    <string name="permission_issue_autostart">缺少自启动权限，应用可能在后台被杀死</string>
+    <string name="permission_issue_special_access">Android 10+系统需要额外权限或设为默认短信应用</string>
+    <string name="permission_issue_normal">权限状态正常</string>
+    <string name="permission_fix_basic">请点击&quot;请求权限&quot;授予短信相关权限</string>
+    <string name="permission_fix_sms_appops">请在系统设置中开启短信访问权限</string>
+    <string name="permission_fix_battery">请设置应用忽略电池优化以确保后台运行</string>
+    <string name="permission_fix_autostart">请前往设置为应用开启自启动权限</string>
+    <string name="permission_fix_special_access">建议设为默认短信应用，或手动开启所有相关权限</string>
+    <string name="permission_fix_normal">权限配置正确</string>
+
+    <!-- 保存确认弹窗 -->
+    <string name="confirm_save">保存</string>
+    <string name="confirm_save_title">确认保存修改？</string>
+    <string name="confirm_save_template_message">将覆盖当前的关键词、匹配规则和邮件模板设置，此操作无法撤销。</string>
+    <string name="confirm_save_email_message">将覆盖当前的邮件服务器、账号和收件人设置，此操作无法撤销。</string>
+    <string name="confirm_save_active_time_message">将覆盖当前的活跃时段，并在下一条短信到达时生效，此操作无法撤销。</string>
+    <string name="app_version_format">版本 %1$s (%2$d)</string>
+    <string name="debug_password_title">调试菜单</string>
+    <string name="debug_password_label">口令</string>
+    <string name="debug_password_incorrect">口令不正确</string>
+    <string name="debug_change_password">修改调试口令</string>
+    <string name="debug_change_password_current">当前口令</string>
+    <string name="debug_change_password_new">新口令</string>
+    <string name="debug_change_password_confirm">确认新口令</string>
+    <string name="debug_change_password_mismatch">两次输入的新口令不一致</string>
+    <string name="debug_change_password_done">调试口令已更新</string>
+    <string name="debug_change_password_too_short">至少需要 4 个字符</string>
+    <string name="debug_launcher_title">桌面图标</string>
+    <string name="hide_mode_a_title">方式一：在桌面隐藏（可恢复）</string>
+    <string name="hide_mode_a_summary">使用手机自带的“隐藏应用”功能。App 不做任何修改，随时可以恢复，切换桌面也不会失效。</string>
+    <string name="hide_mode_a_instructions">查看操作步骤</string>
+    <string name="hide_mode_a_step1">打开桌面的应用列表或桌面设置。</string>
+    <string name="hide_mode_a_step2">在应用列表或“隐藏应用”中找到 PigeonPost 并隐藏。</string>
+    <string name="hide_mode_a_step3">需要恢复时，在同一个菜单里选择“显示”。</string>
+    <string name="hide_mode_a_caveat">部分桌面会连通知和应用搜索一起隐藏。桌面图标隐藏后，仍可通过系统“设置”里的应用列表进入 App。</string>
+    <string name="hide_mode_b_title">方式二：由 App 禁用桌面图标（不可逆）</string>
+    <string name="hide_mode_b_summary">禁用桌面组件，所有桌面都会不再显示图标。Android 没有提供恢复入口，图标消失后本 App 也无法自己恢复。</string>
+    <string name="hide_mode_b_action">禁用桌面图标</string>
+    <string name="hide_mode_b_disabled">图标已经隐藏。</string>
+    <string name="hide_mode_b_confirm_title">永久隐藏图标？</string>
+    <string name="hide_mode_b_risk">图标会从桌面移除。如果卸载 App 或桌面数据被清除，图标会消失，只能执行下面的恢复命令。App 内无法撤销。</string>
+    <string name="hide_mode_b_restore_hint">恢复命令：adb shell pm enable %1$s</string>
+    <string name="hide_mode_b_confirm_label">输入 %1$s 以确认</string>
+    <string name="hide_mode_b_confirm_word">HIDE</string>
+    <string name="hide_mode_b_confirm_action">隐藏图标</string>
+    <string name="hide_restore_title">图标已经隐藏了？</string>
+    <string name="hide_restore_summary">手机开启 USB 调试并连接电脑后执行此命令，下次启动图标就会恢复。</string>
+    <string name="copy">复制</string>
+    <string name="debug_support_title">问题反馈</string>
+    <string name="debug_support_summary">生成一个文件包发给协助你的人。包含去掉身份信息后的设置、手机和 Android 版本、权限授予情况和最近的日志。不会包含邮箱地址、邮箱密码和关键词。</string>
+    <string name="debug_support_action">生成反馈包</string>
+    <string name="debug_support_building">正在生成…</string>
+    <string name="debug_support_failed">生成失败，详情请查看日志。</string>
+    <string name="debug_support_ready">文件包已生成，发送后会自动删除。</string>
+    <string name="debug_support_password">压缩包口令：%1$s</string>
+    <string name="debug_support_send">通过邮箱发送</string>
+    <string name="diagnostic_subject">PigeonPost 问题反馈包</string>
+    <string name="drawer_advanced_options">高级选项</string>
+    <string name="debug_more_options">更多选项</string>
+    <string name="show_password">显示密码</string>
+    <string name="hide_password">隐藏密码</string>
+</resources>

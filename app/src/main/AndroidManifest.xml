@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingVersion">
+    <!-- Permission declarations -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Special use foreground service for SMS monitoring (Android 14+) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- POST_NOTIFICATIONS is declared per flavour: the standard build
+         requests it, the silent build removes it so that the mandatory
+         foreground-service notification is not displayed. -->
+    <!-- Required for ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Hardware feature declaration -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <application
+        android:name=".PigeonPostApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PigeonPost"
+        tools:targetApi="33">
+
+        <activity
+            android:name=".ui.activity.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PigeonPost">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.activity.DebugActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PigeonPost" />
+
+        <activity
+            android:name=".ui.activity.ForwardRecordsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PigeonPost" />
+
+        <activity
+            android:name=".ui.activity.LanguageSettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PigeonPost" />
+
+        <activity
+            android:name=".ui.activity.ServiceStatusActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PigeonPost" />
+
+        <!-- SMS monitoring service -->
+        <service
+            android:name=".service.SmsMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync|specialUse">
+            <!-- Declare special use case for Android 14+ -->
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="sms_monitoring" />
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_EXPLANATION"
+                android:resource="@string/fgs_special_use_explanation" />
+        </service>
+
+        <!-- Permission monitoring service -->
+        <service
+            android:name=".service.PermissionMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync|specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="permission_monitoring" />
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_EXPLANATION"
+                android:resource="@string/fgs_special_use_explanation" />
+        </service>
+
+        <!-- Cleanup service -->
+        <service
+            android:name=".service.CleanupService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- SMS receive broadcast - statically registered, supports background reception -->
+        <receiver
+            android:name=".receiver.SmsReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter android:priority="999">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                <!-- Note: SMS_DELIVER is no longer required in modern Android versions -->
+            </intent-filter>
+        </receiver>
+
+        <!-- Boot completed auto-start broadcast -->
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <!-- File provider for sharing log files -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

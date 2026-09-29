@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      The standard build shows every notification, including the forwarded
+      SMS result, so it needs the runtime notification permission. The silent
+      flavour removes this declaration in src/silent/AndroidManifest.xml.
+    -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+</manifest>

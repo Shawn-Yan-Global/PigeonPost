@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Everything this app stores is sensitive local data: forwarded SMS
+   content and the SMTP credential. Nothing may leave the device, so both
+   cloud backup and device-to-device transfer are excluded outright.
+
+   android:allowBackup="false" already disables this on stock Android, but
+   some vendor ROMs have been reported to ignore it, hence the explicit
+   rules below as a second line of defence.
+
+   See https://developer.android.com/about/versions/12/backup-restore
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="." />
+        <exclude domain="file" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="external" path="." />
+        <exclude domain="device_root" path="." />
+        <exclude domain="device_file" path="." />
+        <exclude domain="device_database" path="." />
+        <exclude domain="device_sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>
