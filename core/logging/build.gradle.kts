@@ -20,7 +20,6 @@ android {
             .toInt()
 
     defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         minSdk =
             libs.versions.minSdk
                 .get()
@@ -44,15 +43,6 @@ android {
     buildFeatures {
         compose = true
     }
-
-    packaging {
-        resources {
-            // log4j and zip4j both ship this file, and the library's own
-            // androidTest APK collides on it. Only affects instrumented tests of
-            // this module, not the app.
-            excludes += "META-INF/DEPENDENCIES"
-        }
-    }
 }
 
 dependencies {
@@ -75,6 +65,4 @@ dependencies {
     implementation(libs.zip4j)
 
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.core)
 }
