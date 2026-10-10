@@ -3,6 +3,8 @@ package com.octopus.pigeon.post.ui.activity
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -10,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.octopus.logging.PigeonLogger
 import com.octopus.logging.ui.activity.LogManagementActivity
 import com.octopus.pigeon.post.BuildConfig
@@ -44,8 +47,30 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Hands the window over from the launch theme to the real one. Must run
+        // before super.onCreate(), and must run even on a repeat launch, so the
+        // flash is gone on a warm start too.
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
+        // Held until the first real frame, so the splash is not dismissed early
+        // into an empty window, which would only move the flash.
+        // Cleared by the first frame the view tree actually draws. OnPreDraw
+        // fires once the hierarchy is measured and about to be rendered, so the
+        // splash is dismissed only when there is a real frame to hand over to.
+        val content = findViewById<View>(android.R.id.content)
+        content?.viewTreeObserver?.addOnPreDrawListener(
+            object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    hasDrawnFirstFrame = true
+                    if (content.viewTreeObserver.isAlive) {
+                        content.viewTreeObserver.removeOnPreDrawListener(this)
+                    }
+                    return true
+                }
+            },
+        )
+        splashScreen.setKeepOnScreenCondition { !hasDrawnFirstFrame }
         PigeonLogger.info(TAG, "MainActivity started")
 
         // Basic security check
@@ -236,6 +261,15 @@ class MainActivity : BaseActivity() {
             }
         }
     }
+
+    /**
+     * Whether Compose has put a frame on screen.
+     *
+     * Read by the splash keep-on-screen condition, so it is a field rather than a
+     * local. A plain var read from the main thread only: both the pre-draw
+     * listener and the condition run there.
+     */
+    private var hasDrawnFirstFrame = false
 
     companion object {
         private val TAG = MainActivity::class.java.simpleName

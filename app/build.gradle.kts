@@ -157,8 +157,27 @@ extensions.configure<ApplicationExtension> {
         }
     }
 
+    // Log files hold operational detail, and on a customer's phone they sit in
+    // app-private storage until the user shares them. Overridable because the
+    // right answer differs between a build you debug on and a build you hand to
+    // somebody else: set pigeonpost.logs.encrypt=false in local.properties to get
+    // readable plaintext logs locally, which is what a debug build already gets.
+    val encryptLogsOverride = localProps.getProperty("pigeonpost.logs.encrypt")?.trim()?.lowercase()
+    val encryptLogsFor: (String) -> Boolean =
+        { buildType ->
+            when (encryptLogsOverride) {
+                "true" -> true
+                "false" -> false
+                else -> buildType != "debug"
+            }
+        }
+
     buildTypes {
+        debug {
+            buildConfigField("boolean", "ENCRYPT_LOGS", encryptLogsFor("debug").toString())
+        }
         release {
+            buildConfigField("boolean", "ENCRYPT_LOGS", encryptLogsFor("release").toString())
             isMinifyEnabled = true
             isShrinkResources = true
             isDebuggable = false
@@ -276,6 +295,7 @@ dependencies {
     implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     val composeBom = platform(libs.androidx.compose.bom)
@@ -318,6 +338,7 @@ dependencies {
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(composeBom)
     androidTestImplementation(libs.androidx.ui.test.junit4)

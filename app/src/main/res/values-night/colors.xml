@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      The dark counterpart of launch_background.
+
+      MaterialTheme's darkColorScheme() leaves background at its default of
+      #1C1B1E when only the accent roles are overridden, which is what
+      Theme.kt does. Without this file the splash and window would stay #FFFBFE
+      in dark mode and flash near-white against a near-black app — the same
+      defect in reverse, and it would hit exactly the users least expecting it.
+    -->
+    <color name="launch_background">#FF1C1B1E</color>
+</resources>

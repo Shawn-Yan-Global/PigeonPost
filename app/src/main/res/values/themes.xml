@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PigeonPost" parent="android:Theme.Material.Light.NoActionBar" />
+    <!--
+      The launch theme.
+
+      Without this the system shows a blank window between the launcher and the
+      first Compose frame, which on some launchers renders dark and reads as a
+      black flash. Naming the background and the icon explicitly means the
+      system has something to draw for that whole interval, so the transition is
+      continuous instead of a colour jump.
+
+      The background is the app's own light surface rather than pure white, so
+      the hand-off to the first real frame is not a second shade change either.
+    -->
+    <style name="Theme.PigeonPost.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/launch_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.PigeonPost</item>
+    </style>
+
+    <!--
+      postSplashScreenTheme target.
+
+      windowBackground is set explicitly rather than left to the platform default.
+      The framework default is resolved per device and has been observed rendering
+      near-black under a dark launcher theme, which is what produced the flash
+      this theme exists to remove.
+    -->
+    <style name="Theme.PigeonPost" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/launch_background</item>
+    </style>
 </resources>
