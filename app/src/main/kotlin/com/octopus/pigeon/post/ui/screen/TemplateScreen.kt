@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -40,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,7 +60,6 @@ fun TemplateScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val focusManager = LocalFocusManager.current
     val templateConfig by viewModel.templateConfig.collectAsState()
     val preferencesRepository = remember { PreferencesRepository(context) }
 
@@ -131,13 +128,11 @@ fun TemplateScreen(
                         minLines = 4,
                         maxLines = 8,
                         enabled = !noFilterMode,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions =
-                            KeyboardActions(onDone = {
-                                // Only dismiss the keyboard. Persisting here would bypass the
-                                // confirmation the Save button asks for.
-                                focusManager.clearFocus()
-                            }),
+                        // One keyword per line, so Enter has to insert a newline and keep the
+                        // caret here. ImeAction.Done (plus an onDone that cleared focus) turned
+                        // the Enter key into "dismiss the keyboard", which made a second
+                        // keyword impossible to type.
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Default),
                     )
 
                     if (noFilterMode) {
