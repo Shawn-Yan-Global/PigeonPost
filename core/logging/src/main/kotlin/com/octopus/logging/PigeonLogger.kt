@@ -7,6 +7,10 @@ import androidx.core.content.FileProvider
 import com.octopus.logging.model.LogContent
 import com.octopus.logging.model.LogFileInfo
 import com.octopus.logging.model.LogStats
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.ZipParameters
+import net.lingala.zip4j.model.enums.CompressionMethod
+import net.lingala.zip4j.model.enums.EncryptionMethod
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.LoggerContext
@@ -17,8 +21,6 @@ import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.zip.ZipEntry
-import java.util.zip.ZipOutputStream
 
 /**
  * Enhanced logging system with multi-language support
@@ -34,14 +36,28 @@ object PigeonLogger {
     private var currentLogFile: File? = null
     private var fileLoggingEnabled = true
 
+    /**
+     * Whether log files on disk are sealed with a Keystore key.
+     *
+     * Off for debug builds so a developer can read them directly, on for release
+     * builds where the file sits on somebody else's phone until they share it.
+     * Driven by BuildConfig.ENCRYPT_LOGS so the choice is a build decision
+     * rather than a runtime one.
+     */
+    private var encryptLogFiles = false
+
+    private val logCipher = LogFileCipher()
+
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     fun initialize(
         context: Context,
         fileLoggingEnabled: Boolean = true,
+        encryptLogFiles: Boolean = false,
     ) {
         try {
             this.fileLoggingEnabled = fileLoggingEnabled
+            this.encryptLogFiles = encryptLogFiles
 
             if (fileLoggingEnabled) {
                 logDir = File(context.filesDir, "logs")
@@ -111,7 +127,10 @@ object PigeonLogger {
             val configContent =
                 buildLog4jConfigXml(
                     fileLoggingEnabled = fileLoggingEnabled,
-                    logFilePath = currentLogFile?.absolutePath,
+                    // When the file is sealed line by line below, Log4j must not
+                    // also write it in the clear. It keeps the console appender for
+                    // logcat; the file is written by [appendToLogFile].
+                    logFilePath = currentLogFile?.absolutePath?.takeUnless { encryptLogFiles },
                 )
 
             val configFile =
@@ -142,7 +161,10 @@ object PigeonLogger {
         val expected = mutableSetOf<String>()
         if (fileLoggingEnabled) {
             expected += "Console"
-            if (currentLogFile != null) {
+            // Log4j is only given a File appender when the file is *not* being
+            // sealed here, so expecting one while encrypting would report a
+            // failure for the working arrangement. See [configureLog4j].
+            if (currentLogFile != null && !encryptLogFiles) {
                 expected += "FileAppender"
             }
         }
@@ -159,11 +181,56 @@ object PigeonLogger {
             }.getOrDefault(emptySet())
         val missing = expected - applied
         if (missing.isNotEmpty()) {
-            Log.e(
-                TAG,
-                "Log4j did not attach ${missing.joinToString()}; file logging is broken and " +
-                    "log lines will only reach logcat. Status logger output explains why.",
+            val message =
+                "Log4j did not attach ${missing.joinToString()}; this build writes its log file " +
+                    "separately, so check whether lines are reaching it. Status logger output explains why."
+            // Release builds strip android.util.Log, so reporting through it would hide
+            // exactly the failure this is here to catch. Write it straight to the file
+            // instead: that path does not depend on Log4j working.
+            currentLogFile?.let { file ->
+                runCatching {
+                    file.appendText("${SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())} $message\n")
+                }
+            }
+            Log.e(TAG, message)
+        }
+    }
+
+    /**
+     * Appends one already-formatted line to the current log file.
+     *
+     * Log4j only writes the file when it is not being sealed here; see
+     * [configureLog4j]. Each line is written in one call so a partially written
+     * line cannot be produced by a concurrent writer.
+     */
+
+    /**
+     * One log line in the same shape Log4j would have written, so a file looks
+     * identical whether it came from the file appender or from here.
+     */
+    private fun formatLine(
+        level: String,
+        message: String,
+        throwable: Throwable?,
+    ): String {
+        val stamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+        // Uppercased to match Log4j's %-5level, which the stats screen counts
+        // against. A lowercase "info" here would make every count come back zero.
+        val base =
+            "$stamp [${Thread.currentThread().name}] %-5s PigeonPost - $message".format(
+                level.uppercase(),
             )
+        if (throwable == null) return base
+        return base + "\n" + Log.getStackTraceString(throwable)
+    }
+
+    private fun appendToLogFile(formatted: String) {
+        if (!fileLoggingEnabled || !encryptLogFiles) return
+        val file = currentLogFile ?: return
+        runCatching {
+            file.appendText(logCipher.sealLine(formatted) + "\n")
+        }.onFailure {
+            Log.e(TAG, "Failed to append to the log file", it)
         }
     }
 
@@ -175,6 +242,7 @@ object PigeonLogger {
     ) {
         checkAndRotateLog()
         val logMessage = "[$tag] $message"
+        if (encryptLogFiles) appendToLogFile(formatLine("debug", logMessage, throwable))
         Log.d(TAG, logMessage, throwable)
         if (::logger.isInitialized) {
             if (throwable != null) {
@@ -192,6 +260,7 @@ object PigeonLogger {
     ) {
         checkAndRotateLog()
         val logMessage = "[$tag] $message"
+        if (encryptLogFiles) appendToLogFile(formatLine("info", logMessage, throwable))
         Log.i(TAG, logMessage, throwable)
         if (::logger.isInitialized) {
             if (throwable != null) {
@@ -209,6 +278,7 @@ object PigeonLogger {
     ) {
         checkAndRotateLog()
         val logMessage = "[$tag] $message"
+        if (encryptLogFiles) appendToLogFile(formatLine("warn", logMessage, throwable))
         Log.w(TAG, logMessage, throwable)
         if (::logger.isInitialized) {
             if (throwable != null) {
@@ -226,6 +296,7 @@ object PigeonLogger {
     ) {
         checkAndRotateLog()
         val logMessage = "[$tag] $message"
+        if (encryptLogFiles) appendToLogFile(formatLine("error", logMessage, throwable))
         Log.e(TAG, logMessage, throwable)
         if (::logger.isInitialized) {
             if (throwable != null) {
@@ -351,7 +422,8 @@ object PigeonLogger {
                                 "yyyy-MM-dd HH:mm:ss",
                                 Locale.getDefault(),
                             ).format(Date())
-                        }",
+                        }" +
+                            "\n\nThe archive is password protected. Password: ${context.packageName}",
                     )
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
@@ -369,7 +441,8 @@ object PigeonLogger {
         context: Context? = null,
         dateRange: Pair<String, String>? = null,
     ) {
-        ZipOutputStream(zipFile.outputStream()).use { zip ->
+        val password = context?.packageName?.toCharArray()
+        ZipOutputStream(zipFile.outputStream(), password).use { zip ->
             val logFiles =
                 if (dateRange != null) {
                     getLogFilesByDateRange(dateRange.first, dateRange.second)
@@ -377,25 +450,48 @@ object PigeonLogger {
                     getAllLogFiles()
                 }
 
-            // Add log files
+            // Add log files.
+            //
+            // Opened here, on the device that wrote them, because the seal is
+            // keyed to that device's Keystore: a sealed file copied to another
+            // phone, or attached to a bug report, is undecryptable. Decrypting at
+            // export is what lets the archive stay readable to whoever debugs the
+            // problem, while the file on disk stays sealed the whole time.
             logFiles.forEach { logInfo ->
                 val file = File(logInfo.path)
                 if (file.exists()) {
-                    zip.putNextEntry(ZipEntry(file.name))
-                    file.inputStream().use { input ->
-                        input.copyTo(zip)
-                    }
+                    zip.putNextEntry(encryptedParameters(file.name))
+                    val text = readableLines(file).joinToString(separator = "\n")
+                    zip.write(text.toByteArray(Charsets.UTF_8))
                     zip.closeEntry()
                 }
             }
 
             // Add system information
             val systemInfo = getSystemInfo(context)
-            zip.putNextEntry(ZipEntry("system_info.txt"))
+            zip.putNextEntry(encryptedParameters("system_info.txt"))
             zip.write(systemInfo.toByteArray())
             zip.closeEntry()
         }
     }
+
+    /**
+     * Entries are ZipCrypto encrypted, matching the diagnostic package.
+     *
+     * Log files hold redacted but still real operational detail, and an export is
+     * the one artefact most likely to be attached to an email to someone else.
+     * ZipCrypto rather than AES so the system file manager and ordinary desktop
+     * unzip tools can open it without extra software. The goal is that a bundle
+     * forwarded by accident is not casually readable, not that it withstands
+     * someone who specifically wants the contents.
+     */
+    private fun encryptedParameters(entryName: String): ZipParameters =
+        ZipParameters().apply {
+            fileNameInZip = entryName
+            compressionMethod = CompressionMethod.DEFLATE
+            isEncryptFiles = true
+            encryptionMethod = EncryptionMethod.ZIP_STANDARD
+        }
 
     private fun getSystemInfo(context: Context? = null): String =
         buildString {
@@ -476,6 +572,20 @@ object PigeonLogger {
             0
         }
 
+    /**
+     * The log file's lines, opened if the file is sealed.
+     *
+     * Debug builds write plaintext and release builds write sealed lines, and a
+     * directory can hold both after a build type change, so each line is opened
+     * on its own rather than deciding once for the whole file.
+     */
+    private fun readableLines(file: File): List<String> =
+        runCatching {
+            file.readLines().map { logCipher.openLine(it) }
+        }.onFailure {
+            Log.e(TAG, "Failed to read ${file.name}", it)
+        }.getOrDefault(emptyList())
+
     // Log statistics information
     fun getLogStats(logFilePath: String? = null): LogStats =
         try {
@@ -484,8 +594,9 @@ object PigeonLogger {
             if (targetFile == null || !targetFile.exists()) {
                 LogStats(0, 0, 0, 0, 0)
             } else {
-                val content = targetFile.readText()
-                val lines = content.lines()
+                // Read through the cipher so counts match what the viewer shows
+                // rather than counting base64 blobs.
+                val lines = readableLines(targetFile)
 
                 LogStats(
                     totalLines = lines.size,
@@ -512,7 +623,7 @@ object PigeonLogger {
                 return LogContent(emptyList(), 0, 0, 0)
             }
 
-            val lines = file.readLines()
+            val lines = readableLines(file)
             val totalLines = lines.size
             val totalPages = (totalLines + pageSize - 1) / pageSize
             val startIndex = page * pageSize

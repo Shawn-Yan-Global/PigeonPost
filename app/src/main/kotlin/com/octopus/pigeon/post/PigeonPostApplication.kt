@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import com.octopus.locale.withLocale
+import com.octopus.logging.PigeonLogRedactor
 import com.octopus.logging.PigeonLogger
 import com.octopus.logging.ui.activity.LoggingConfig
 import com.octopus.logging.ui.screen.LogCleanupConfig
@@ -40,7 +41,19 @@ class PigeonPostApplication : Application() {
         // The silent build writes no log files at all: a plaintext on-disk
         // archive of every forwarded message is exactly the kind of leak this
         // variant exists to avoid.
-        PigeonLogger.initialize(this, fileLoggingEnabled = !BuildConfig.SILENT)
+        PigeonLogger.initialize(
+            this,
+            fileLoggingEnabled = !BuildConfig.SILENT,
+            // Debug builds keep plaintext logs so they can be read directly while
+            // working; release builds seal them with the Keystore key.
+            encryptLogFiles = BuildConfig.ENCRYPT_LOGS,
+        )
+
+        // Message bodies go into the log verbatim only on a build that is not
+        // sealed anyway. Both settings follow the same flag, so "can I read this
+        // log file directly" and "does this log file contain message bodies" are
+        // one decision rather than two that can disagree.
+        PigeonLogRedactor.allowVerboseBodies(!BuildConfig.ENCRYPT_LOGS)
         PigeonLogger.info(TAG, "Hello world, I am Pigeon Post!")
         PigeonLogger.info(TAG, "Application started with locale: ${resources.configuration.locales[0]}")
 
@@ -63,6 +76,16 @@ class PigeonPostApplication : Application() {
         DebugUnlockState.attach(PreferencesRepository(this))
 
         CoroutineScope(Dispatchers.Default).launch {
+            // Upgrade any configuration written before field encryption existed.
+            // Reads accept both forms, so this can run late without affecting
+            // correctness, but running it here means the plaintext does not sit on
+            // disk for the rest of the process lifetime.
+            runCatching {
+                PreferencesRepository(this@PigeonPostApplication).migratePlaintextToEncrypted()
+            }.onFailure {
+                PigeonLogger.error(TAG, "Could not encrypt stored configuration", it)
+            }
+
             // Auto-restart service if it was enabled before app restart (e.g., after language change)
             restartServiceIfNeeded()
 

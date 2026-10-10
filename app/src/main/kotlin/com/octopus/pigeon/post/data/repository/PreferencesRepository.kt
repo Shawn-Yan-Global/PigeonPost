@@ -13,6 +13,7 @@ import com.octopus.pigeon.post.data.model.ActiveTimeConfig
 import com.octopus.pigeon.post.data.model.EmailConfig
 import com.octopus.pigeon.post.data.model.MatchLogic
 import com.octopus.pigeon.post.data.model.TemplateConfig
+import com.octopus.pigeon.post.data.security.SecureValueCipher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Locale
@@ -25,7 +26,20 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  */
 class PreferencesRepository(
     private val context: Context,
+    private val cipher: SecureValueCipher = SecureValueCipher(),
 ) {
+    /**
+     * Values that identify the user are held encrypted, so the DataStore file on
+     * disk is not enough to recover a mail password or the addresses. Reads pass
+     * unprefixed values straight through, which is what makes upgrading from a
+     * build without [SecureValueCipher] non-destructive: the old plaintext keeps
+     * working and is rewritten encrypted on the next save.
+     */
+    private fun secure(key: Preferences.Key<String>): (Preferences) -> String? =
+        { preferences ->
+            preferences[key]?.let { stored -> if (cipher.isEncrypted(stored)) cipher.decrypt(stored) else stored }
+        }
+
     private object PreferencesKeys {
         val KEYWORDS = stringSetPreferencesKey("keywords")
         val CASE_SENSITIVE = booleanPreferencesKey("case_sensitive")
@@ -71,15 +85,17 @@ class PreferencesRepository(
     val templateConfig: Flow<TemplateConfig> =
         context.dataStore.data.map { preferences ->
             TemplateConfig(
-                keywords = preferences[PreferencesKeys.KEYWORDS]?.toList() ?: emptyList(),
+                keywords =
+                    preferences[PreferencesKeys.KEYWORDS]
+                        ?.mapNotNull { stored -> stored.takeIf { it.isNotEmpty() }?.let(cipher::decrypt) }
+                        ?: emptyList(),
                 caseSensitive = preferences[PreferencesKeys.CASE_SENSITIVE] ?: false,
                 matchLogic =
                     preferences[PreferencesKeys.MATCH_LOGIC]?.let {
                         MatchLogic.valueOf(it)
                     } ?: MatchLogic.ANY,
                 emailTemplate =
-                    preferences[PreferencesKeys.EMAIL_TEMPLATE]
-                        ?: "",
+                    secure(PreferencesKeys.EMAIL_TEMPLATE)(preferences) ?: "",
                 // Empty default, UI layer will provide i18n default
                 useTemplate = preferences[PreferencesKeys.USE_TEMPLATE] ?: false,
             )
@@ -90,9 +106,9 @@ class PreferencesRepository(
             EmailConfig(
                 smtpServer = preferences[PreferencesKeys.SMTP_SERVER] ?: "",
                 smtpPort = preferences[PreferencesKeys.SMTP_PORT] ?: 587,
-                senderEmail = preferences[PreferencesKeys.SENDER_EMAIL] ?: "",
-                password = preferences[PreferencesKeys.PASSWORD] ?: "",
-                recipientEmail = preferences[PreferencesKeys.RECIPIENT_EMAIL] ?: "",
+                senderEmail = secure(PreferencesKeys.SENDER_EMAIL)(preferences) ?: "",
+                password = secure(PreferencesKeys.PASSWORD)(preferences) ?: "",
+                recipientEmail = secure(PreferencesKeys.RECIPIENT_EMAIL)(preferences) ?: "",
                 emailSubject =
                     preferences[PreferencesKeys.EMAIL_SUBJECT]
                         ?: "",
@@ -118,10 +134,14 @@ class PreferencesRepository(
 
     suspend fun updateTemplateConfig(config: TemplateConfig) {
         context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.KEYWORDS] = config.keywords.toSet()
+            preferences[PreferencesKeys.KEYWORDS] =
+                config.keywords
+                    .filter { it.isNotBlank() }
+                    .mapNotNull { cipher.encrypt(it.trim()) }
+                    .toSet()
             preferences[PreferencesKeys.CASE_SENSITIVE] = config.caseSensitive
             preferences[PreferencesKeys.MATCH_LOGIC] = config.matchLogic.name
-            preferences[PreferencesKeys.EMAIL_TEMPLATE] = config.emailTemplate
+            preferences[PreferencesKeys.EMAIL_TEMPLATE] = cipher.encrypt(config.emailTemplate) ?: ""
             preferences[PreferencesKeys.USE_TEMPLATE] = config.useTemplate
         }
     }
@@ -130,9 +150,9 @@ class PreferencesRepository(
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.SMTP_SERVER] = config.smtpServer
             preferences[PreferencesKeys.SMTP_PORT] = config.smtpPort
-            preferences[PreferencesKeys.SENDER_EMAIL] = config.senderEmail
-            preferences[PreferencesKeys.PASSWORD] = config.password
-            preferences[PreferencesKeys.RECIPIENT_EMAIL] = config.recipientEmail
+            preferences[PreferencesKeys.SENDER_EMAIL] = cipher.encrypt(config.senderEmail) ?: ""
+            preferences[PreferencesKeys.PASSWORD] = cipher.encrypt(config.password) ?: ""
+            preferences[PreferencesKeys.RECIPIENT_EMAIL] = cipher.encrypt(config.recipientEmail) ?: ""
             preferences[PreferencesKeys.EMAIL_SUBJECT] = config.emailSubject
         }
     }
@@ -281,5 +301,51 @@ class PreferencesRepository(
         // This uses LocaleHelper to ensure consistency across the app
         com.octopus.locale.LocaleHelper
             .saveLanguageCode(context, language)
+    }
+
+    /**
+     * Rewrites any value stored before [SecureValueCipher] existed into its
+     * encrypted form.
+     *
+     * Without this, an install that upgrades from 1.0.0 would keep its mail
+     * password in plaintext forever: reads accept both forms, so nothing breaks,
+     * but nothing improves either unless the user happens to visit the settings
+     * screen and press save. Called once at startup.
+     *
+     * Deliberately tolerant. A key that cannot be read is left as it is rather
+     * than deleted, because losing a working mail configuration to a failed
+     * migration would be far worse than leaving it unreadable.
+     */
+    suspend fun migratePlaintextToEncrypted() {
+        context.dataStore.edit { preferences ->
+            for (key in stringKeysToSecure) {
+                val stored = preferences[key] ?: continue
+                if (cipher.isEncrypted(stored)) continue
+                preferences[key] = cipher.encrypt(stored) ?: continue
+            }
+            val keywords = preferences[PreferencesKeys.KEYWORDS]
+            if (keywords != null && keywords.any { !cipher.isEncrypted(it) }) {
+                preferences[PreferencesKeys.KEYWORDS] =
+                    keywords
+                        .mapNotNull { stored ->
+                            if (cipher.isEncrypted(stored)) stored else cipher.encrypt(stored)
+                        }.toSet()
+            }
+        }
+    }
+
+    private companion object {
+        /**
+         * The string keys whose values identify the user. Ports, booleans, the
+         * schedule and the debug password hash are left alone: none of them is
+         * sensitive, and the debug hash is already a one-way digest.
+         */
+        val stringKeysToSecure =
+            listOf(
+                PreferencesKeys.SENDER_EMAIL,
+                PreferencesKeys.PASSWORD,
+                PreferencesKeys.RECIPIENT_EMAIL,
+                PreferencesKeys.EMAIL_TEMPLATE,
+            )
     }
 }

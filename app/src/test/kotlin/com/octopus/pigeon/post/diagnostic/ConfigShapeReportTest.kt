@@ -29,7 +29,7 @@ class ConfigShapeReportTest {
             keywordCount = 3,
             hasHtmlTemplate = true,
             activeScheduleEnabled = true,
-            activeWindowDescription = "08:00 to 22:30",
+            currentlyWithinActiveWindow = true,
             recordRetentionDays = 7,
             autoCleanupEnabled = true,
             notificationEnabled = true,
@@ -47,7 +47,7 @@ class ConfigShapeReportTest {
         assertTrue(text.contains("ssl: true"))
         assertTrue(text.contains("recipient addresses: 2 configured"))
         assertTrue(text.contains("keywords: 3 configured"))
-        assertTrue(text.contains("08:00 to 22:30"))
+        assertTrue(text.contains("right now is inside the active window: true"))
         assertTrue(text.contains("retention: 7 days"))
     }
 
@@ -105,6 +105,30 @@ class ConfigShapeReportTest {
         assertTrue(text.contains("recipient addresses: 0 configured"))
         assertTrue(text.contains("keywords: 0 configured"))
         assertTrue(text.contains("html template: false"))
+    }
+
+    @Test
+    fun `report never spells out the hours the user is active`() {
+        val text = report.toText()
+
+        // An active window is the most identifying thing the app stores. A
+        // "01:00 to 05:00" line would tell a reader more about the person than
+        // every other field combined, so the report carries only whether the
+        // window covers now.
+        for (hour in listOf("00", "01", "02", "03", "04", "05", "06", "07", "08", "22", "23")) {
+            assertFalse("diagnostic report leaked an active window hour: $hour", text.contains(": $hour"))
+        }
+        assertFalse(text.contains("active window: 08:00"))
+    }
+
+    @Test
+    fun `window that does not cover now is reported as outside`() {
+        // The case this field exists for: forwarding silently does nothing
+        // because the schedule excludes the current time.
+        val text = report.copy(currentlyWithinActiveWindow = false).toText()
+
+        assertTrue(text.contains("active schedule: true"))
+        assertTrue(text.contains("right now is inside the active window: false"))
     }
 
     private companion object {

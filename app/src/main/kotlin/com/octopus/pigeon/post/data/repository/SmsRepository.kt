@@ -5,48 +5,62 @@ import com.octopus.logging.PigeonLogger
 import com.octopus.pigeon.post.BuildConfig
 import com.octopus.pigeon.post.data.database.SmsRecordDao
 import com.octopus.pigeon.post.data.model.SmsRecord
+import com.octopus.pigeon.post.data.security.SecureValueCipher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 
 /**
- * Repository for managing SMS records in the database
- * Handles CRUD operations and data validation
+ * Repository for managing SMS records in the database.
+ *
+ * This is the only place that talks to the DAO, and it is where the sender and
+ * body are encrypted on the way in and decrypted on the way out. Everything
+ * above this class deals in plaintext [SmsRecord]s and never sees ciphertext, so
+ * the UI, the forwarding service and the record screen need no changes and
+ * cannot accidentally log an encrypted body.
  */
 class SmsRepository(
     private val smsRecordDao: SmsRecordDao,
+    private val cipher: SecureValueCipher = SecureValueCipher(),
 ) {
     companion object {
         private const val TAG = "SmsRepository"
     }
 
-    fun getRecentRecords(): Flow<List<SmsRecord>> = smsRecordDao.getRecentRecords()
+    fun getRecentRecords(): Flow<List<SmsRecord>> = smsRecordDao.getRecentRecords().map { it.map(::decrypt) }
 
-    fun getForwardedRecords(): Flow<List<SmsRecord>> = smsRecordDao.getForwardedRecords()
+    fun getForwardedRecords(): Flow<List<SmsRecord>> = smsRecordDao.getForwardedRecords().map { it.map(::decrypt) }
 
     suspend fun insertSmsRecord(smsRecord: SmsRecord): Long {
         // The silent build keeps no SMS history at all. Storing every message
-        // in plaintext would be worse than not storing it, so nothing is
-        // written and the caller gets the "duplicate" sentinel back.
+        // would be worse than not storing it, so nothing is written and the
+        // caller gets the "duplicate" sentinel back.
         if (BuildConfig.SILENT) return -1L
 
-        // Check if the same record already exists
         val receivedTimeEpoch = smsRecord.receivedTime.toEpochSecond(java.time.ZoneOffset.UTC)
+        val senderIndex = cipher.blindIndex(smsRecord.sender)
+        val contentIndex = cipher.blindIndex(smsRecord.content)
+
+        // Matching on the indexes, exactly as the plaintext columns did before.
         val existingCount =
             smsRecordDao.countExistingRecord(
-                smsRecord.sender,
-                smsRecord.content,
+                senderIndex,
+                contentIndex,
                 receivedTimeEpoch,
             )
 
         if (existingCount > 0) {
             PigeonLogger.warn(
                 TAG,
-                "Duplicate SMS record detected, skipping insertion: sender=${smsRecord.sender}, time=${smsRecord.receivedTime}",
+                "Duplicate SMS record detected, skipping insertion: sender=${PigeonLogRedactor.tag(smsRecord.sender)}, time=${smsRecord.receivedTime}",
             )
-            return -1L // Return -1 indicating duplicate record not inserted
+            return -1L
         }
 
-        val result = smsRecordDao.insert(smsRecord)
+        val result =
+            smsRecordDao.insert(
+                smsRecord.encrypt(senderIndex, contentIndex),
+            )
         if (result > 0) {
             PigeonLogger.info(
                 TAG,
@@ -73,7 +87,9 @@ class SmsRepository(
             id = id,
             forwardedTime = now.toEpochSecond(java.time.ZoneOffset.UTC),
             success = success,
-            errorMessage = errorMessage,
+            // A send failure message can quote the recipient address, so it is
+            // treated as content rather than as status text.
+            errorMessage = errorMessage?.let { cipher.encrypt(it) },
         )
     }
 
@@ -81,7 +97,7 @@ class SmsRepository(
         id: Long,
         errorMessage: String?,
     ) {
-        smsRecordDao.updateErrorMessage(id, errorMessage)
+        smsRecordDao.updateErrorMessage(id = id, errorMessage = errorMessage?.let { cipher.encrypt(it) })
     }
 
     suspend fun deleteOldRecords(cutoffTime: LocalDateTime): Int {
@@ -103,11 +119,35 @@ class SmsRepository(
         return deletedCount
     }
 
-    fun getAllRecords(): Flow<List<SmsRecord>> = smsRecordDao.getAllRecords()
+    fun getAllRecords(): Flow<List<SmsRecord>> = smsRecordDao.getAllRecords().map { it.map(::decrypt) }
 
-    fun getUnforwardedRecords(): Flow<List<SmsRecord>> = smsRecordDao.getUnforwardedRecords()
+    fun getUnforwardedRecords(): Flow<List<SmsRecord>> = smsRecordDao.getUnforwardedRecords().map { it.map(::decrypt) }
 
     suspend fun getRecordsCount(): Int = smsRecordDao.getRecordsCount()
 
     suspend fun getForwardedRecordsCount(): Int = smsRecordDao.getForwardedRecordsCount()
+
+    /**
+     * Replaces the sender and body with ciphertext, keeping the supplied blind
+     * indexes so the unique index covers the same values it would have covered
+     * in plaintext.
+     */
+    private fun SmsRecord.encrypt(
+        senderIndex: String,
+        contentIndex: String,
+    ): SmsRecord =
+        copy(
+            sender = cipher.encrypt(sender).orEmpty(),
+            content = cipher.encrypt(content).orEmpty(),
+            senderIndex = senderIndex,
+            contentIndex = contentIndex,
+        )
+
+    /** The inverse of [encrypt]. */
+    private fun decrypt(record: SmsRecord): SmsRecord =
+        record.copy(
+            sender = cipher.decrypt(record.sender),
+            content = cipher.decrypt(record.content),
+            errorMessage = record.errorMessage?.let { cipher.decrypt(it) },
+        )
 }

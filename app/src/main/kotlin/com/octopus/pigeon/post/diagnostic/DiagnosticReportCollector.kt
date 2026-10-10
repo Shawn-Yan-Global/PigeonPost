@@ -5,7 +5,6 @@ import com.octopus.pigeon.post.data.repository.PreferencesRepository
 import com.octopus.pigeon.post.service.SmtpTransport
 import kotlinx.coroutines.flow.first
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 /**
  * Reads the live configuration and reduces it to a [ConfigShapeReport].
@@ -16,8 +15,6 @@ import java.time.format.DateTimeFormatter
  * cannot tell what is safe without knowing what the app stores.
  */
 object DiagnosticReportCollector {
-    private val timeFormat = DateTimeFormatter.ofPattern("HH:mm")
-
     suspend fun collect(context: Context): ConfigShapeReport {
         val repository = PreferencesRepository(context)
         val email = repository.emailConfig.first()
@@ -45,7 +42,7 @@ object DiagnosticReportCollector {
             keywordCount = template.keywords.count { it.isNotBlank() },
             hasHtmlTemplate = template.useTemplate && template.emailTemplate.isNotBlank(),
             activeScheduleEnabled = activeTime.isEnabled,
-            activeWindowDescription = windowDescription(activeTime.startHour, activeTime.startMinute, activeTime.endHour, activeTime.endMinute),
+            currentlyWithinActiveWindow = isWithinActiveWindow(activeTime.startHour, activeTime.startMinute, activeTime.endHour, activeTime.endMinute, LocalTime.now()),
             recordRetentionDays = cleanupDays,
             autoCleanupEnabled = cleanupEnabled,
             notificationEnabled = smsReceived || smsForwarded,
@@ -59,21 +56,36 @@ object DiagnosticReportCollector {
     }
 
     /**
-     * The active window, as a range of clock times.
+     * Whether [now] falls inside the configured window.
      *
-     * The hours are included because an active window that does not cover the
-     * current time is a common reason for "it never forwards", and a clock range
-     * is not identifying. The specific rule the user set is not included.
+     * Reported instead of the window itself: "forwarding never happens" is almost
+     * always the window not covering the current moment, and answering that needs
+     * only the yes or no. The start and end hours are the most identifying values
+     * the app stores, so they stay out of the report.
      */
-    private fun windowDescription(
+    internal fun isWithinActiveWindow(
         startHour: Int,
         startMinute: Int,
         endHour: Int,
         endMinute: Int,
-    ): String =
-        runCatching {
-            val start = LocalTime.of(startHour, startMinute).format(timeFormat)
-            val end = LocalTime.of(endHour, endMinute).format(timeFormat)
-            "$start to $end"
-        }.getOrElse { "invalid window ($startHour:$startMinute to $endHour:$endMinute)" }
+        now: LocalTime,
+    ): Boolean {
+        val start =
+            runCatching { LocalTime.of(startHour, startMinute) }.getOrNull()
+                ?: return false
+        val end =
+            runCatching { LocalTime.of(endHour, endMinute) }.getOrNull()
+                ?: return false
+        val minuteOfDay = now.hour * 60 + now.minute
+        val startMinuteOfDay = start.hour * 60 + start.minute
+        val endMinuteOfDay = end.hour * 60 + end.minute
+        // A window whose end is not after its start wraps past midnight, which is
+        // what makes "22:00 to 06:00" mean an overnight window rather than an
+        // empty one.
+        return if (startMinuteOfDay <= endMinuteOfDay) {
+            minuteOfDay in startMinuteOfDay..endMinuteOfDay
+        } else {
+            minuteOfDay >= startMinuteOfDay || minuteOfDay <= endMinuteOfDay
+        }
+    }
 }

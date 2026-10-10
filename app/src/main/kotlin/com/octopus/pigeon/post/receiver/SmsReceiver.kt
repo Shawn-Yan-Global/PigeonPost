@@ -132,11 +132,18 @@ class SmsReceiver : BroadcastReceiver() {
         val receivedTime = LocalDateTime.now()
 
         Log.d(TAG, "SMS received: sender=${PigeonLogRedactor.tag(sender)}, length=${content.length}")
-        PigeonLogger.info(TAG, "📱 SMS received from ${PigeonLogRedactor.tag(sender)}")
+        PigeonLogger.info(
+            TAG,
+            "📱 SMS received from ${PigeonLogRedactor.tag(sender)} — ${PigeonLogRedactor.describe(content)}",
+        )
         PigeonLogger.debug(
             TAG,
             "📱 SMS content digest: ${PigeonLogRedactor.contentTag(content)}",
         )
+        // The body itself, on a build that is allowed to hold it. On release this
+        // resolves to the same shape summary as the line above, so the log never
+        // has to be special-cased to stay quiet about message contents.
+        PigeonLogger.debug(TAG, "📱 SMS body: ${PigeonLogRedactor.body(content)}")
 
         // Critical: Ensure services are running when SMS arrives
         // This helps wake up the app even if it was killed
@@ -176,7 +183,7 @@ class SmsReceiver : BroadcastReceiver() {
             PigeonLogger.warn(TAG, "🚫 True duplicate SMS detected (sender & content match exactly)")
             PigeonLogger.warn(
                 TAG,
-                "   Sender: ${PigeonLogRedactor.tag(sender)}, Content length: ${content.length}",
+                "   Sender: ${PigeonLogRedactor.tag(sender)}, Body: ${PigeonLogRedactor.describe(content)}",
             )
             PigeonLogger.warn(TAG, "   Skipping processing and NOT saving to database")
             return
@@ -187,7 +194,7 @@ class SmsReceiver : BroadcastReceiver() {
         PigeonLogger.info(TAG, "✅ SMS passed duplicate check (cache size: ${recentSmsCache.size})")
         PigeonLogger.debug(
             TAG,
-            "   Sender: ${PigeonLogRedactor.tag(sender)}, Content length: ${content.length}",
+            "   Sender: ${PigeonLogRedactor.tag(sender)}, Body: ${PigeonLogRedactor.describe(content)}",
         )
 
         // 立即发送短信接收通知

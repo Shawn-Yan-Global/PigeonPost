@@ -14,6 +14,13 @@ package com.octopus.pigeon.post.diagnostic
  * Anything that could identify the user, or reveal the content of their mail, is
  * reduced to a count or a boolean here. The counts still carry the information
  * needed to explain "your password is wrong" versus "no keywords are set".
+ *
+ * The active window is deliberately not described by its clock range. Hours
+ * that specific are a behaviour fingerprint: a 01:00 to 05:00 window says more
+ * about the person than any other field here, and it is the one field a reader
+ * could use to build a profile. Whether the window covers the current moment
+ * answers the question this actually exists to answer, which is why forwarding
+ * silently does nothing, without revealing when the user is awake.
  */
 data class ConfigShapeReport(
     val smtpServer: String,
@@ -28,7 +35,7 @@ data class ConfigShapeReport(
     val keywordCount: Int,
     val hasHtmlTemplate: Boolean,
     val activeScheduleEnabled: Boolean,
-    val activeWindowDescription: String,
+    val currentlyWithinActiveWindow: Boolean,
     val recordRetentionDays: Int,
     val autoCleanupEnabled: Boolean,
     val notificationEnabled: Boolean,
@@ -66,7 +73,7 @@ data class ConfigShapeReport(
             appendLine()
             appendLine("Schedule")
             appendLine("  active schedule: $activeScheduleEnabled")
-            appendLine("  active window: $activeWindowDescription")
+            appendLine("  right now is inside the active window: $currentlyWithinActiveWindow")
             appendLine()
             appendLine("Storage")
             appendLine("  auto cleanup: $autoCleanupEnabled")

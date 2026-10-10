@@ -61,5 +61,85 @@ object PigeonLogRedactor {
      */
     fun size(value: String?): Int = value?.length ?: 0
 
+    /**
+     * Whether message bodies may be written verbatim.
+     *
+     * Off in release builds, on in debug builds, so a developer reproducing a
+     * keyword problem can see exactly what arrived. A release build never logs a
+     * body, whatever this is set to: the flag only widens what a *development*
+     * build shows, and it cannot be turned on by a caller in a shipped APK.
+     */
+    @Volatile
+    private var verboseBodiesAllowed = false
+
+    fun allowVerboseBodies(allowed: Boolean) {
+        verboseBodiesAllowed = allowed
+    }
+
+    fun verboseBodiesAllowed(): Boolean = verboseBodiesAllowed
+
+    /**
+     * A body, or nothing.
+     *
+     * Returns the body only where [verboseBodiesAllowed] says it is safe to, and
+     * otherwise the shape below.
+     */
+    fun body(value: String?): String {
+        val text = value.orEmpty()
+        if (verboseBodiesAllowed) return text
+        return describe(value)
+    }
+
+    /**
+     * A shape summary of a message body: enough to tell what kind of message it
+     * was and whether it could plausibly contain a code, without being the
+     * message.
+     *
+     * This exists because "the keyword did not match" is the single most common
+     * reason for a support request, and a digest plus a length cannot answer it.
+     * What usually matters is the character mix and whether the digits are
+     * grouped the way a one-time passcode is: `【银行】验证码 493812` and an
+     * English sentence of the same length produce different summaries, which is
+     * enough to tell a code apart from prose and to notice an unexpected prefix
+     * or a message that arrived truncated.
+     *
+     * The counts are character-class counts, so they say how many digits there
+     * were without saying what they were.
+     */
+    fun describe(content: String?): String {
+        val text = content.orEmpty()
+        if (text.isEmpty()) return "empty"
+        val digits = text.count { it.isDigit() }
+        val asciiLetters = text.count { it in 'a'..'z' || it in 'A'..'Z' }
+        val cjk = text.count { it.code in 0x4E00..0x9FFF }
+        val longestDigitRun = text.longestRunOf { it.isDigit() }
+        val parts =
+            buildList {
+                add("len=${text.length}")
+                if (digits > 0) add("digits=$digits")
+                if (asciiLetters > 0) add("latin=$asciiLetters")
+                if (cjk > 0) add("cjk=$cjk")
+                if (longestDigitRun >= MIN_DIGIT_RUN_FOR_CODE) add("digit_run=$longestDigitRun")
+                if (text.any { it.isWhitespace() }) add("spaced")
+            }
+        return parts.joinToString(separator = ",")
+    }
+
+    private fun String.longestRunOf(predicate: (Char) -> Boolean): Int {
+        var longest = 0
+        var current = 0
+        for (char in this) {
+            current = if (predicate(char)) current + 1 else 0
+            if (current > longest) longest = current
+        }
+        return longest
+    }
+
     private const val TAG_BYTES = 4
+
+    /**
+     * Four digits in a row is the shortest run worth reporting, since it is the
+     * usual width of a verification code.
+     */
+    private const val MIN_DIGIT_RUN_FOR_CODE = 4
 }

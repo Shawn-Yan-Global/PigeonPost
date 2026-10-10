@@ -125,13 +125,39 @@
 -keep class com.octopus.pigeon.post.PigeonPostApplication { *; }
 
 # === LOG4J WARNINGS SUPPRESSION ===
-# Suppress warnings for missing classes from Log4j that are not used on Android
--dontwarn javax.lang.model.element.**
+# Log4j resolves its implementation through ServiceLoader and plugin metadata
+# that R8 cannot see, so without these rules -repackageclasses 'o' strips
+# log4j-core out of release builds. That leaves debug builds logging and
+# release builds silently writing no file at all, which is exactly the failure
+# mode this file is guarding against elsewhere.
+-keep class org.apache.logging.log4j.** { *; }
+-keep class org.apache.logging.log4j.core.config.plugins.processor.** { *; }
+-keepnames class org.apache.logging.log4j.core.config.plugins.processor.PluginProxy
+# The plugin descriptor is a resource, not code, so it has to be kept by name.
+-keep class org.apache.logging.log4j.core.config.plugins.processor.PluginCache$Plugin
+-keepclassmembers class org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor$PluginBuilder {
+    *;
+}
+
+# Optional log4j-core integrations that are compiled in but unused on Android:
+# async appenders, JMS/JMX/JMX appenders, the RingBuffer admin, the JSON layouts,
+# and the XML/CSV/compress appenders. None of these are on the app's runtime path.
+-dontwarn com.lmax.disruptor.**
+-dontwarn com.conversantmedia.**
+-dontwarn org.jctools.**
+-dontwarn com.fasterxml.jackson.**
+-dontwarn org.apache.commons.compress.**
+-dontwarn org.apache.commons.csv.**
+-dontwarn org.apache.kafka.**
+-dontwarn org.codehaus.stax2.**
+-dontwarn org.zeromq.**
+-dontwarn java.rmi.**
+-dontwarn javax.jms.**
+-dontwarn javax.lang.model.**
+-dontwarn javax.xml.stream.**
 -dontwarn javax.management.**
 -dontwarn javax.naming.**
 -dontwarn javax.script.**
-# Log4j-core bundles its annotation processor (PluginProcessor), which references the JDK
-# compiler API. It is build-time tooling and never runs on Android.
 -dontwarn javax.tools.**
 -dontwarn org.osgi.framework.**
 -dontwarn java.lang.management.**
