@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Android](https://img.shields.io/badge/Android-13%2B-green.svg)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-purple.svg)](https://kotlinlang.org)
-[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)](https://github.com/yourusername/PigeonPost)
+[![Version](https://img.shields.io/badge/Version-1.0.0-orange.svg)](https://github.com/Shawn-Yan-Global/PigeonPost)
 
 **中文文档** | [English](README.md)
 
@@ -181,7 +181,7 @@ PigeonPost/
 
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/PigeonPost.git
+git clone https://github.com/Shawn-Yan-Global/PigeonPost.git
 cd PigeonPost
 ```
 
@@ -198,6 +198,66 @@ cd PigeonPost
 3. **配置邮箱**：设置 SMTP 服务器和凭据
 4. **可选 - 活跃时段**：配置高优先级监听时段
 5. **启动服务**：开启短信监听
+
+### 数据存放位置
+
+| 内容 | 位置 | 保护方式 |
+| --- | --- | --- |
+| 邮箱密码、收发件地址、关键词、HTML 模板 | `DataStore` | AES/GCM 加密，密钥保存在 Android Keystore |
+| SMTP 主机、端口、各开关、活跃时段、debug 密码校验值 | `DataStore` | 明文：这些都不是敏感信息 |
+| 短信记录：发件人、正文、发送失败原因 | Room 数据库（`pigeon_post_database`） | AES/GCM 加密，密钥保存在 Android Keystore |
+| 发件人与正文的盲索引 | Room 数据库 | 带密钥的 HMAC，用于维持唯一索引和去重；只能看出两条记录是否同源或同文 |
+| 日志文件 | `files/logs/` | debug 构建明文；release 构建 AES/GCM 加密。详见[日志治理](#日志治理) |
+| 诊断包 | `cache/`，分享后删除 | ZipCrypto，密码为应用 ID（即包名） |
+| 日志导出包 | `cache/`，分享后删除 | ZipCrypto，密码为应用 ID（即包名） |
+
+加密后的字段只有应用本身能读取：密钥始终留在 Keystore 中，从不落盘，所以即使把 DataStore 文件从设备上拷走，也无法还原邮箱密码。端口、开关和活跃时段刻意不加密，因为加密它们只会增加开销和复杂度，并不能保护到任何东西。
+
+锁屏时转发依然正常工作。Keystore 密钥刻意没有设置用户认证要求：接收短信时需要在没有界面的后台线程里读取凭据并完成转发。若这里要求认证，验证码到了也不会有任何反应，直到用户解锁手机。
+
+盲索引是唯一需要如实说明的取舍。唯一索引匹配和去重需要"能与自身相等"的值，而随机化加密做不到这点，因此发件人和正文旁边各存了一份带密钥的 HMAC。持有数据库的人可以看出两条记录是否来自同一发件人、是否为同一正文，但无法得知具体内容。去掉盲索引可以连这一点也消除，代价是重复短信会无上限地堆积。
+
+设置项会在首次启动时自动迁移：字段加密出现之前写入的值会照常读取，并在后台改写为加密格式，用户无需重新配置。**短信历史不会保留**——这些行原本是明文，若要转换就必须把所有已存短信读进内存。旧数据库会被丢弃重建，效果等同于重装应用。
+
+两种导出包都使用 ZipCrypto 而非 AES，这样系统文件管理器和常见的桌面解压工具无需额外软件即可打开。它能防止导出包被误转发后被随手查看，但并不适合用来抵挡刻意想要破解内容的人。密码是应用 ID，分享时会在分享面板中显示。
+
+### 日志治理
+
+这是整个应用里最容易被"不知道背景的新贡献者"改坏的部分，所以规则写在这里，而不是散落在某个恰好写了第一行日志的文件里。
+
+**两种构建。** 日志行为由一个开关 `BuildConfig.ENCRYPT_LOGS` 控制，定义在 `app/build.gradle.kts`：
+
+| 构建 | 磁盘上的日志文件 | 日志中的短信正文 |
+| --- | --- | --- |
+| `debug` | 明文，可直接 `cat` 或看 Logcat | 原样写入 |
+| `release` | AES/GCM 加密，密钥在 Keystore | 绝不写入，只记录特征摘要 |
+
+可以在 `local.properties` 里覆盖：
+
+```properties
+# 默认：debug 明文，release 加密
+pigeonpost.logs.encrypt=true
+```
+
+在 debug 构建上设 `true` 是复现客户环境的正规做法：文件被加密了，但应用内所有读取入口依然能解密。CI 两种设置都不需要；release 默认加密，除非构建显式要求不加密。
+
+**为什么 release 的日志要加密。** 日志文件在别人手机上停留于应用私有目录，直到这个人主动分享。私有目录其他应用读不到，但 root 设备读得到、备份读得到、拿到数据目录副本的人也读得到。而日志恰恰是最可能被转手交给别人的那一个文件，所以正式版本在磁盘上必须是不透明的。
+
+加密是**逐行**而不是逐文件。Log4j 的 file appender 只接受文件名并直接往里写字节，想挂钩子就得先写明文；而整文件加密意味着每次追加都要重写整个文件。逐行 AES/GCM 后以 base64 追加，追加和轮转都很便宜，而且一行读不出来只损失一行，不会毁掉整个文件。
+
+密钥保存在平台 Keystore 中，别名与保护用户凭据的那把**不同**，所以日志文件不能被用来反推邮箱密码。密钥刻意不要求用户认证：接收短信时必须在锁屏状态下完成读取和转发，这里加认证会导致验证码到了却毫无反应，直到用户解锁手机。
+
+**为什么 release 日志永远不含短信正文。** 它记录的是**特征**：
+
+```
+📱 SMS received from id:9f3a2b1c — len=18,digits=6,cjk=8,digit_run=6
+```
+
+长度、字符类别计数、最长连续数字段。这能把验证码和普通文本区分开——而这是摘要加长度做不到的——并且足以回答"关键词为什么没匹配上"或"短信是不是被截断了"，同时正文本身不可还原。相同内容仍会产生相同摘要，因此同一会话内的事件依然可以互相关联。
+
+**为什么导出是在设备上解密的。** 加密密钥绑定在写入它的那台设备上。一个被复制到 issue 里、或作为附件发出去的加密文件，任何人都解不开。所以 `Export logs` 会在客户手机上逐行解密，再把明文写进导出包。磁盘上的文件全程保持加密，而你收到的导出包用应用 ID 作为密码即可打开。
+
+**如果你要新增一行日志。** 请使用 `PigeonLogRedactor`，不要直接拼接值。标识类用 `tag()`（稳定且不可逆），短信内容用 `body()` 或 `describe()`。通过字符串插值进入日志的值，是唯一能推翻上述所有机制的写法，而且它既不会导致构建失败，也不会在 code review 中被看出来。
 
 ### Debug 菜单密码
 
@@ -242,7 +302,9 @@ pigeonpost.debug.password=在这里填你的密码
 
 - **不收集数据**：所有数据仅保存在本机
 - **本地存储**：短信记录和日志均存放在本地
-- **凭据安全**：邮箱凭据保存在 DataStore
+- **Keystore 加密凭据**：邮箱密码、收发件地址、关键词和 HTML 模板均使用保存在 Android Keystore 中的密钥加密，仅凭 DataStore 文件无法还原
+- **导出包加密**：诊断包和日志导出包都带密码保护，密码均为应用 ID（即包名）
+- **诊断信息脱敏**：诊断包只报告配置的"形状"（计数与布尔值），不含地址、密码、关键词，也不含你的活跃时段
 - **混淆加固**：Release 构建启用 R8，包含激进的代码压缩、控制流混淆和资源名混淆
 - **开源透明**：代码完全公开，便于安全审计
 - **无统计分析**：不含任何第三方追踪或统计
@@ -292,7 +354,7 @@ limitations under the License.
 ## 📞 支持
 
 如有疑问或问题，欢迎：
-1. 查阅 [Issues](https://github.com/yourusername/PigeonPost/issues) 页面
+1. 查阅 [Issues](https://github.com/Shawn-Yan-Global/PigeonPost/issues) 页面
 2. 如果没有相同问题，请创建新 Issue
 3. 详细描述你的问题
 
