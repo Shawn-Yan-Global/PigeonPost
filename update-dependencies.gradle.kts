@@ -5,7 +5,7 @@ import java.io.File
 import java.time.LocalDateTime
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("com.github.ben-manes.versions") version "0.67.0"
 }
 
 // Configure the dependencyUpdates task to emit JSON so downstream parsing works

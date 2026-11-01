@@ -109,8 +109,8 @@ PigeonPost/
 ### 核心技术
 | | |
 |---|---|
-| **语言** | Kotlin 2.4.20 |
-| **构建系统** | Gradle 9.7.1 + Kotlin DSL，AGP 9.4.1 |
+| **语言** | Kotlin 2.4.21 |
+| **构建系统** | Gradle 9.8.2 + Kotlin DSL，AGP 9.5.0 |
 | **JDK** | 21 |
 | **编译 SDK** | 37 |
 | **最低 SDK** | 33 (Android 13) |
@@ -125,7 +125,7 @@ PigeonPost/
 - **StateFlow**：响应式状态管理
 - **Room** 2.8.5：本地数据库
 - **DataStore**：配置存储
-- **KSP** 2.3.6：注解处理
+- **KSP** 2.3.13：注解处理
 
 ### 后台处理
 - **Coroutines**：进程内异步任务
@@ -173,7 +173,7 @@ PigeonPost/
 ## 📱 快速开始
 
 ### 环境要求
-- 支持 AGP 9.4.1 的 Android Studio
+- 支持 AGP 9.5.0 的 Android Studio
 - JDK 21
 - Android 13 或更高版本的设备或模拟器
 

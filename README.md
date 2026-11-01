@@ -109,8 +109,8 @@ The main application module containing:
 ### Core Technologies
 | | |
 |---|---|
-| **Language** | Kotlin 2.4.20 |
-| **Build System** | Gradle 9.7.1 with Kotlin DSL, AGP 9.4.1 |
+| **Language** | Kotlin 2.4.21 |
+| **Build System** | Gradle 9.8.2 with Kotlin DSL, AGP 9.5.0 |
 | **JDK** | 21 |
 | **Compile SDK** | 37 |
 | **Min SDK** | 33 (Android 13) |
@@ -125,7 +125,7 @@ The main application module containing:
 - **StateFlow**: Reactive state management
 - **Room** 2.8.5: Android local database
 - **DataStore**: configuration storage
-- **KSP** 2.3.6 for annotation processing
+- **KSP** 2.3.13 for annotation processing
 
 ### Background Processing
 - **Coroutines** for in-process async work
@@ -174,7 +174,7 @@ without anyone having to remember it. To run it explicitly:
 ## 📱 Getting Started
 
 ### Prerequisites
-- Android Studio with AGP 9.4.1 support
+- Android Studio with AGP 9.5.0 support
 - JDK 21
 - Android device or emulator running Android 13 or higher
 
